@@ -90,30 +90,33 @@ export function updateGame(camera) {
 	let direction = new THREE.Vector3();
 	let finalDirection = new THREE.Vector3();
 
-	if (keys["w"]) {
-		camera.getWorldDirection(direction);
-		direction.y = 0;
-		direction = direction.normalize();
-		finalDirection.add(direction);
+	if (localStorage.getItem('visited') === "true") {
+		if (keys["w"]) {
+			camera.getWorldDirection(direction);
+			direction.y = 0;
+			direction = direction.normalize();
+			finalDirection.add(direction);
+		}
+		if (keys["s"]) {
+			camera.getWorldDirection(direction);
+			direction.y = 0;
+			direction = direction.normalize().negate();
+			finalDirection.add(direction);
+		}
+		if (keys["a"]) {
+			camera.getWorldDirection(direction);
+			direction.y = 0;
+			direction = new THREE.Vector3(direction.z, 0, -direction.x).normalize();
+			finalDirection.add(direction);
+		}
+		if (keys["d"]) {
+			camera.getWorldDirection(direction);
+			direction.y = 0;
+			direction = new THREE.Vector3(-direction.z, 0, direction.x).normalize();
+			finalDirection.add(direction);
+		}
 	}
-	if (keys["s"]) {
-		camera.getWorldDirection(direction);
-		direction.y = 0;
-		direction = direction.normalize().negate();
-		finalDirection.add(direction);
-	}
-	if (keys["a"]) {
-		camera.getWorldDirection(direction);
-		direction.y = 0;
-		direction = new THREE.Vector3(direction.z, 0, -direction.x).normalize();
-		finalDirection.add(direction);
-	}
-	if (keys["d"]) {
-		camera.getWorldDirection(direction);
-		direction.y = 0;
-		direction = new THREE.Vector3(-direction.z, 0, direction.x).normalize();
-		finalDirection.add(direction);
-	}
+	
 
 	if (character !== undefined) {
 		let newPosition = character.position.clone().add(finalDirection);

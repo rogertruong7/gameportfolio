@@ -116,7 +116,7 @@ function updateCamera(playerCharacter, camera, CAMERA_OFFSET) {
 	// Ensure the camera always looks at the player character
 	camera.lookAt(playerCharacter.position);
 }
-
+setup();
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
@@ -150,17 +150,13 @@ const popup = document.getElementById("popup");
 const okButton = document.getElementById("okButton");
 
 window.addEventListener("load", () => {
-  if (localStorage.getItem("visited") === "true") {
-    setup();
-    return;
+  if (localStorage.getItem("visited") !== "true") {
+    popup.style.display = "flex"; // Make the popup visible
+    document.body.style.cursor = "grab"; // Make the cursor visible during the popup
   }
-  popup.style.display = "flex"; // Make the popup visible
-  document.body.style.cursor = "default"; // Make the cursor visible during the popup
 });
 
 okButton.addEventListener("click", () => {
   popup.style.display = "none";
-  document.body.style.cursor = "none"; // Hide the cursor
   localStorage.setItem("visited", true);
-  setup();
 });
