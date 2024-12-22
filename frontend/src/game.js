@@ -98,7 +98,7 @@ export function updateGame(camera) {
 	if (keys["s"]) {
 		camera.getWorldDirection(direction);
 		direction.y = 0;
-		direction = new THREE.Vector3(-direction.z, 0, -direction.x).normalize();
+		direction = direction.normalize().negate();
 		finalDirection.add(direction);
 	}
 	if (keys["a"]) {

@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { initGame, updateGame } from "./game.js";
 
 // Select the canvas and set up the renderer
-const CAMERA_ROTATION_SPEED = 0.005;
+const CAMERA_ROTATION_SPEED = 0.001;
 const canvas = document.querySelector("#gameCanvas");
 const renderer = new THREE.WebGLRenderer({ canvas });
 
@@ -19,7 +19,7 @@ let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
 let currentRotation = new THREE.Vector2(0, 0);
 const camera = new THREE.PerspectiveCamera(
-  70,
+  60,
   window.innerWidth / window.innerHeight,
   0.1,
   3000
@@ -109,7 +109,7 @@ function updateCamera(playerCharacter, camera, CAMERA_OFFSET) {
 
 	// Smoothly move the camera towards the target position based on the rotated offset
 	const targetPosition = playerCharacter.position.clone().add(cameraOffset);
-	camera.position.lerp(targetPosition, 0.1); // Smoothly follow player
+	camera.position.lerp(targetPosition, 0.2); // Smoothly follow player
 
 	// Ensure the camera always looks at the player character
 	camera.lookAt(playerCharacter.position);
@@ -120,12 +120,13 @@ function animate() {
   requestAnimationFrame(animate);
 
   // Update the game state
-  updateGame(camera);
+  
 
   // Update camera position smoothly
   if (playerCharacter) {
 	updateCamera(playerCharacter, camera, CAMERA_OFFSET)
   }
+  updateGame(camera);
 
   renderer.render(scene, camera);
 }
