@@ -87,83 +87,83 @@ function spacePressed(scene) {
 
 // Move character toward target position
 export function updateGame(camera) {
-  let direction = new THREE.Vector3();
-  let finalDirection = new THREE.Vector3();
+	let direction = new THREE.Vector3();
+	let finalDirection = new THREE.Vector3();
 
-  if (keys["w"]) {
-    camera.getWorldDirection(direction);
-    direction.y = 0;
-    direction = direction.normalize();
-    finalDirection.add(direction);
-  }
-  if (keys["s"]) {
-    camera.getWorldDirection(direction);
-    direction.y = 0;
-    direction = direction.normalize().negate();
-    finalDirection.add(direction);
-  }
-  if (keys["a"]) {
-    camera.getWorldDirection(direction);
-    direction.y = 0;
-    direction = new THREE.Vector3(direction.z, 0, -direction.x).normalize();
-    finalDirection.add(direction);
-  }
-  if (keys["d"]) {
-    camera.getWorldDirection(direction);
-    direction.y = 0;
-    direction = new THREE.Vector3(-direction.z, 0, direction.x).normalize();
-    finalDirection.add(direction);
-  }
+	if (keys["w"]) {
+		camera.getWorldDirection(direction);
+		direction.y = 0;
+		direction = direction.normalize();
+		finalDirection.add(direction);
+	}
+	if (keys["s"]) {
+		camera.getWorldDirection(direction);
+		direction.y = 0;
+		direction = direction.normalize().negate();
+		finalDirection.add(direction);
+	}
+	if (keys["a"]) {
+		camera.getWorldDirection(direction);
+		direction.y = 0;
+		direction = new THREE.Vector3(direction.z, 0, -direction.x).normalize();
+		finalDirection.add(direction);
+	}
+	if (keys["d"]) {
+		camera.getWorldDirection(direction);
+		direction.y = 0;
+		direction = new THREE.Vector3(-direction.z, 0, direction.x).normalize();
+		finalDirection.add(direction);
+	}
 
-  if (character !== undefined) {
-    let newPosition = character.position.clone().add(finalDirection);
-    const collisionNormal = isCollision(newPosition);
+	if (character !== undefined) {
+		let newPosition = character.position.clone().add(finalDirection);
+		const collisionNormal = isCollision(newPosition);
 
-    if (!collisionNormal) {
-      // No collision: move the character in the intended direction
-      character.position.addScaledVector(finalDirection, SPEED);
-    } else {
-      // Slide along the wall using the collision normal
-      const slideDirection = finalDirection
-        .clone()
-        .projectOnPlane(collisionNormal);
-      if (slideDirection.length() > 0) {
-        slideDirection.normalize();
-        character.position.addScaledVector(slideDirection, SPEED);
-      }
-    }
-  }
+		if (!collisionNormal) {
+			// No collision: move the character in the intended direction
+			character.position.addScaledVector(finalDirection, SPEED);
+		} else {
+			// Slide along the wall using the collision normal
+			const slideDirection = finalDirection
+				.clone()
+				.projectOnPlane(collisionNormal);
+			if (slideDirection.length() > 0) {
+				slideDirection.normalize();
+				character.position.addScaledVector(slideDirection, SPEED);
+			}
+		}
+	}
 }
 
 function isCollision(newPosition) {
-  // Create bounding box for the character
-  const characterBox = new THREE.Box3().setFromObject(character);
-  characterBox.setFromCenterAndSize(newPosition, new THREE.Vector3(20, 40, 20)); // Character size
+	// Create bounding box for the character
+	const characterBox = new THREE.Box3().setFromObject(character);
+	characterBox.setFromCenterAndSize(newPosition, new THREE.Vector3(20, 40, 20)); // Character size
 
-  let collisionNormal = null;
+	let collisionNormal = null;
 
-  // Check each building for collision
-  for (let building of buildings) {
-    const buildingBox = new THREE.Box3().setFromObject(building);
+	// Check each building for collision
+	for (let building of buildings) {
+		const buildingBox = new THREE.Box3().setFromObject(building);
 
-    if (characterBox.intersectsBox(buildingBox)) {
-      // Calculate closest point on the bounding box manually
-      const closestPoint = new THREE.Vector3(
-        Math.max(buildingBox.min.x, Math.min(newPosition.x, buildingBox.max.x)),
-        Math.max(buildingBox.min.y, Math.min(newPosition.y, buildingBox.max.y)),
-        Math.max(buildingBox.min.z, Math.min(newPosition.z, buildingBox.max.z))
-      );
+		if (characterBox.intersectsBox(buildingBox)) {
+			// Calculate closest point on the bounding box manually
+			const closestPoint = new THREE.Vector3(
+				Math.max(buildingBox.min.x, Math.min(newPosition.x, buildingBox.max.x)),
+				Math.max(buildingBox.min.y, Math.min(newPosition.y, buildingBox.max.y)),
+				Math.max(buildingBox.min.z, Math.min(newPosition.z, buildingBox.max.z))
+			);
 
-      collisionNormal = new THREE.Vector3()
-        .subVectors(newPosition, closestPoint)
-        .normalize();
+			collisionNormal = new THREE.Vector3()
+				.subVectors(newPosition, closestPoint)
+				.normalize();
 
-      collisionNormal.y = 0; // Flatten the normal to the XZ plane
-      break; // Only process the first collision
-    }
-  }
+			collisionNormal.y = 0; // Flatten the normal to the XZ plane
+			break; // Only process the first collision
+		}
+	}
 
-  return collisionNormal; // Return the collision normal or null
+	return collisionNormal; // Return the collision normal or null
 }
 
 // Enter a building and show projects
