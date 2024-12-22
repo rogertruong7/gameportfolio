@@ -9,7 +9,7 @@ const SPEED = 2; // Movement SPEED
 export function initGame(scene) {
   // Game floor
   const floorGeometry = new THREE.BoxGeometry(1000, 1000, 200);
-  const floorMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+  const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x74d682 });
   const floor = new THREE.Mesh(floorGeometry, floorMaterial);
   floor.rotation.x = -Math.PI / 2;
   floor.position.set(0, -100, 0);
@@ -54,7 +54,7 @@ function onKeyUp(event) {
 
 // Create buildings and doors
 function createBuildings(scene) {
-  const buildingMaterial = new THREE.MeshPhongMaterial({ color: 0x8e44ad });
+  const buildingMaterial = new THREE.MeshPhongMaterial({ color: 0x574000 });
   for (let i = 0; i < 3; i++) {
     const buildingGeometry = new THREE.BoxGeometry(100, 150, 100);
     const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
@@ -64,11 +64,11 @@ function createBuildings(scene) {
     scene.add(building);
 
     // Door indicator
-    const doorMaterial = new THREE.MeshBasicMaterial({ color: 0x27ae60 });
+    const doorMaterial = new THREE.MeshBasicMaterial({ color: 0xc27b00 });
     const doorGeometry = new THREE.BoxGeometry(20, 40, 5);
     const door = new THREE.Mesh(doorGeometry, doorMaterial);
     door.position.set(building.position.x, 20, building.position.z + 50);
-
+	building.door = door;
     buildings.push(building);
 
     scene.add(door);
@@ -116,7 +116,6 @@ export function updateGame(camera) {
 			finalDirection.add(direction);
 		}
 	}
-	
 
 	if (character !== undefined) {
 		let newPosition = character.position.clone().add(finalDirection);

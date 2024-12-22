@@ -7,7 +7,7 @@ const CAMERA_ROTATION_SPEED = 0.001;
 const canvas = document.querySelector("#gameCanvas");
 const renderer = new THREE.WebGLRenderer({ canvas });
 
-renderer.setClearColor(0xd4f6fc, 1);
+renderer.setClearColor(0x80e8ff, 1);
 renderer.shadowMap.enabled = true; // Enable shadows
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Shadow quality
 renderer.setSize(window.innerWidth, window.innerHeight);
