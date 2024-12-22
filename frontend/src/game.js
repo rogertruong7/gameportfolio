@@ -4,7 +4,7 @@ import { showInterior } from "./building";
 let character;
 const buildings = [];
 let keys = {}; // Track active keys
-const SPEED = 1.5; // Movement SPEED
+const SPEED = 2; // Movement SPEED
 
 export function initGame(scene) {
 	// Game floor
@@ -68,7 +68,7 @@ function createBuildings(scene) {
 		const doorGeometry = new THREE.BoxGeometry(20, 40, 5);
 		const door = new THREE.Mesh(doorGeometry, doorMaterial);
 		door.position.set(building.position.x, 20, building.position.z + 50);
-		building.door = door;
+		
 		buildings.push(building);
 
 		scene.add(door);
@@ -128,18 +128,22 @@ export function updateGame(camera) {
 
 function isCollision(newPosition) {
   // Create bounding box for the character
-	const characterBox = new THREE.Box3().setFromObject(character);
-	characterBox.setFromCenterAndSize(newPosition, new THREE.Vector3(20, 40, 20)); // Character size
+  const characterBox = new THREE.Box3().setFromObject(character);
+  characterBox.setFromCenterAndSize(newPosition, new THREE.Vector3(20, 40, 20)); // Character size
 
-	// Check each building for collision
-	for (let building of buildings) {
-		const buildingBox = new THREE.Box3().setFromObject(building);
-		if (characterBox.intersectsBox(buildingBox)) {
-			return true; // There is a collision
-		}
-	}
+  // Iterate over the buildings to check for collisions
+  for (let building of buildings) {
+    const buildingBox = new THREE.Box3().setFromObject(building);
+    if (characterBox.intersectsBox(buildingBox)) {
+      // Calculate the collision normal (vector pointing away from the surface of the building)
+      const collisionNormal = new THREE.Vector3().subVectors(character.position, building.position).normalize();
+      
+      // Slide the character along the building surface
+      return collisionNormal;  // Return the collision normal instead of just true
+    }
+  }
 
-	return false; // No collision
+  return null; // No collision
 }
 
 

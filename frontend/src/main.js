@@ -7,7 +7,7 @@ const CAMERA_ROTATION_SPEED = 0.001;
 const canvas = document.querySelector("#gameCanvas");
 const renderer = new THREE.WebGLRenderer({ canvas });
 
-
+renderer.setClearColor(0xd4f6fc, 1);
 renderer.shadowMap.enabled = true; // Enable shadows
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Shadow quality
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -19,7 +19,7 @@ let isDragging = false;
 let previousMousePosition = { x: 0, y: 0 };
 let currentRotation = new THREE.Vector2(0, 0);
 const camera = new THREE.PerspectiveCamera(
-  60,
+  70,
   window.innerWidth / window.innerHeight,
   0.1,
   3000
@@ -106,10 +106,12 @@ function updateCamera(playerCharacter, camera, CAMERA_OFFSET) {
 		CAMERA_OFFSET.z
 	);
 	cameraOffset.applyQuaternion(rotationQuat); // Apply the rotation to the offset
-
+	if (cameraOffset.y < 0) {
+		cameraOffset.y = 0;
+	}
 	// Smoothly move the camera towards the target position based on the rotated offset
 	const targetPosition = playerCharacter.position.clone().add(cameraOffset);
-	camera.position.lerp(targetPosition, 0.2); // Smoothly follow player
+	camera.position.lerp(targetPosition, 0.1); // Smoothly follow player
 
 	// Ensure the camera always looks at the player character
 	camera.lookAt(playerCharacter.position);
