@@ -7,10 +7,11 @@ const speed = 2; // Movement speed
 
 export function initGame(scene) {
   // Game floor
-  const floorGeometry = new THREE.PlaneGeometry(3000, 3000);
-  const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x808080 });
+  const floorGeometry = new THREE.BoxGeometry(1000, 1000, 200);
+  const floorMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
   const floor = new THREE.Mesh(floorGeometry, floorMaterial);
   floor.rotation.x = -Math.PI / 2;
+	floor.position.set(0,-100,0);
   floor.castShadow = false; // The floor doesn't cast shadows, it just receives them
   floor.receiveShadow = true;
   scene.add(floor);
@@ -19,7 +20,8 @@ export function initGame(scene) {
   const charMaterial = new THREE.MeshPhongMaterial({ color: 0xffd700 });
   const charGeometry = new THREE.BoxGeometry(20, 40, 20);
   character = new THREE.Mesh(charGeometry, charMaterial);
-  character.position.set(-300, 20, 0); // Start position
+
+  character.position.set(-100, 20, 200); // Start position
   character.castShadow = true; // If the character should cast shadows
   character.receiveShadow = true; // If the character should receive shadows
   scene.add(character);
@@ -28,7 +30,7 @@ export function initGame(scene) {
   createBuildings(scene);
 
   // Add mouse and keyboard controls
-  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("keydown", (event) => onKeyDown(event, scene));
   document.addEventListener("keyup", onKeyUp);
   window.addEventListener("blur", onWindowBlur);
   return character;
@@ -38,7 +40,7 @@ function onWindowBlur() {
   keys = {}; // Clear all keys
 }
 
-function onKeyDown(event) {
+function onKeyDown(event, scene) {
   keys[event.key.toLowerCase()] = true; // Track key press
   if (event.code === "Space") {
     spacePressed(scene);
@@ -72,24 +74,34 @@ function createBuildings(scene) {
   }
 }
 
-
-
 // Handle keyboard input for entering buildings
 function spacePressed(scene) {
-const nearbyBuilding = buildings.find(
+  const nearbyBuilding = buildings.find(
     (building) => character.position.distanceTo(building.door.position) < 30
-);
-if (nearbyBuilding) {
+  );
+  if (nearbyBuilding) {
     enterBuilding(scene, nearbyBuilding);
-}
+  }
 }
 
 // Move character toward target position
 export function updateGame() {
-  if (keys["w"]) character.position.z -= speed; // Forward
-  if (keys["s"]) character.position.z += speed; // Backward
-  if (keys["a"]) character.position.x -= speed; // Left
-  if (keys["d"]) character.position.x += speed; // Right
+  if (keys["w"]) {
+    character.position.z -= speed; // Forward
+    character.position.x -= speed; // Left
+  }
+  if (keys["s"]) {
+    character.position.x += speed; // Right
+    character.position.z += speed; // Backward
+  }
+  if (keys["a"]) {
+    character.position.z += speed; // Backward
+    character.position.x -= speed; // Left
+  }
+  if (keys["d"]) {
+    character.position.z -= speed; // Forward
+    character.position.x += speed; // Left
+  }
 }
 
 // Enter a building and show projects

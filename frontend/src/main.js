@@ -13,14 +13,15 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 // Create the scene and camera
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
-  80,
+  60,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
 
+
 // Camera offset from the player
-const CAMERA_OFFSET = new THREE.Vector3(0, 100, 200);
+const CAMERA_OFFSET = new THREE.Vector3(200, 300, 200); // change x value to rotate camera
 
 // Store reference to the player character
 let playerCharacter;
@@ -76,4 +77,31 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
+});
+
+const popup = document.getElementById("popup");
+const okButton = document.getElementById("okButton");
+
+window.onload(() => {
+  popup.style.visibility = "visible"; // Make the popup visible
+  document.body.style.cursor = "default"; // Make the cursor visible during the popup
+});
+
+okButton.addEventListener("click", () => {
+  popup.style.visibility = "hidden"; // Hide the popup
+  document.body.style.cursor = "none"; // Hide the cursor
+
+  // Enable mouse movement to control camera rotation
+  let mouseX = 0;
+  let mouseY = 0;
+
+  document.addEventListener("mousemove", (event) => {
+    // Get mouse position relative to the center of the window
+    mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+    mouseY = (event.clientY / window.innerHeight) * 2 - 1;
+
+    // Rotate the camera based on mouse movement
+    camera.rotation.y = mouseX * Math.PI; // Left/Right rotation
+    camera.rotation.x = (mouseY * Math.PI) / 4; // Up/Down rotation
+  });
 });
