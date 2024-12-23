@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { initGame, updateGame } from "./game.js";
 
 // Select the canvas and set up the renderer
-const CAMERA_ROTATION_SPEED = 0.001;
+
 const canvas = document.querySelector("#gameCanvas");
 const renderer = new THREE.WebGLRenderer({ canvas });
 
@@ -13,137 +13,123 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Shadow quality
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 const scene = new THREE.Scene();
-
-// Camera Movement
-let isDragging = false;
-let previousMousePosition = { x: 0, y: 0 };
-let currentRotation = new THREE.Vector2(0, 0);
-const camera = new THREE.PerspectiveCamera(
-  70,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  3000
-);
-let CAMERA_OFFSET = new THREE.Vector3(200, 400, 200); // change x value to rotate camera
+export const CAMERA_OFFSET = new THREE.Vector3(500, 800, 500); 
 
 document.body.style.cursor = "grab";
 
-document.addEventListener("mousedown", (event) => {
-  isDragging = true;
-  previousMousePosition = { x: event.clientX, y: event.clientY };
-});
+// Create a spherical grid
+const radius = 2000;  // Radius of the sphere
+const gridDivisions = 50;  // Number of grid lines (can adjust for more or less)
 
-document.addEventListener("mousemove", (event) => {
-	if (isDragging) {
-		const deltaX = event.clientX - previousMousePosition.x;
-		const deltaY = event.clientY - previousMousePosition.y;
+function createSphericalGrid(radius, divisions) {
+  const gridMaterial = new THREE.LineBasicMaterial({
+    color: 0x15709e,
+    opacity: 0.5,
+    transparent: true,
+  });
 
-		// Update the current rotation based on mouse movement
-		currentRotation.x -= deltaY * CAMERA_ROTATION_SPEED; // Pitch (up/down)
-		currentRotation.y -= deltaX * CAMERA_ROTATION_SPEED; // Yaw (left/right)
+  // Create horizontal circles (latitudes)
+  for (let i = 0; i <= divisions; i++) {
+    const lat = Math.PI * i / divisions - Math.PI / 2;  // Latitude (ranging from -pi/2 to pi/2)
+    const geometry = new THREE.BufferGeometry();
+    const positions = [];
+    
+    for (let j = 0; j <= divisions; j++) {
+      const lon = 2 * Math.PI * j / divisions;  // Longitude (ranging from 0 to 2pi)
+      const x = radius * Math.cos(lat) * Math.cos(lon);
+      const y = radius * Math.sin(lat);
+      const z = radius * Math.cos(lat) * Math.sin(lon);
+      positions.push(x, y, z);  // Add each vertex to the positions array
+    }
 
-		// Limit vertical rotation to avoid flipping
-		currentRotation.x = Math.max(
-		-Math.PI / 2,
-		Math.min(Math.PI / 2, currentRotation.x)
-		);
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3)); // Set the positions attribute
+    const line = new THREE.Line(geometry, gridMaterial);
+    scene.add(line);
+  }
 
-		// Update the previous mouse position for the next frame
-		previousMousePosition = { x: event.clientX, y: event.clientY };
-	}
-});
+  // Create vertical circles (longitudes)
+  for (let i = 0; i <= divisions; i++) {
+    const lon = 2 * Math.PI * i / divisions;  // Longitude (ranging from 0 to 2pi)
+    const geometry = new THREE.BufferGeometry();
+    const positions = [];
+    
+    for (let j = 0; j <= divisions; j++) {
+      const lat = Math.PI * j / divisions - Math.PI / 2;  // Latitude (ranging from -pi/2 to pi/2)
+      const x = radius * Math.cos(lat) * Math.cos(lon);
+      const y = radius * Math.sin(lat);
+      const z = radius * Math.cos(lat) * Math.sin(lon);
+      positions.push(x, y, z);  // Add each vertex to the positions array
+    }
 
-document.addEventListener("mouseup", () => {
-	isDragging = false;
-});
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3)); // Set the positions attribute
+    const line = new THREE.Line(geometry, gridMaterial);
+    scene.add(line);
+  }
+}
 
-document.addEventListener("mouseleave", () => {
-	if (isDragging) {
-		isDragging = false;
-	}
-});
+createSphericalGrid(radius, gridDivisions);
 
-// Game
-// Store reference to the player character
-let playerCharacter;
-
-// Lights
+////////////////////////////////////////////////
+///////////////////// Lights ///////////////////
+////////////////////////////////////////////////
 const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-directionalLight.position.set(-100, 200, 300); // Position the light
+directionalLight.position.set(800, 500, 300); // Position the light
 directionalLight.castShadow = true; // Enable shadows
+directionalLight.shadow.camera.near = 0.5; // Shadow camera near plane
+directionalLight.shadow.camera.far = 10000; // Shadow camera far plane
+directionalLight.shadow.camera.left = -4000; // Set shadow camera left
+directionalLight.shadow.camera.right = 4000; // Set shadow camera right
+directionalLight.shadow.camera.top = 4000; // Set shadow camera top
+directionalLight.shadow.camera.bottom = -4000; // Set shadow camera bottom
+
 scene.add(directionalLight);
 
 // Add an ambient light for base illumination
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.2); // Soft white light
 scene.add(ambientLight);
 
-// Set shadow camera to optimize for the scene
-directionalLight.shadow.camera.left = -1000;
-directionalLight.shadow.camera.right = 1000;
-directionalLight.shadow.camera.top = 1000;
-directionalLight.shadow.camera.bottom = -1000;
-directionalLight.shadow.camera.near = 0.1;
-directionalLight.shadow.camera.far = 10000;
 
-// Initialize the game
+
+
+////////////////////////////////////////////////
+/////////////////// Game ///////////////////////
+////////////////////////////////////////////////
+
+// Store reference to the player character
+let playerCharacter;
+const sharedState = { mixer: null };
+
+const clock = new THREE.Clock();
 function setup() {
-  playerCharacter = initGame(scene); // Adjusted to return the player character
-  camera.position.copy(playerCharacter.position.clone().add(CAMERA_OFFSET));
-  camera.lookAt(playerCharacter.position);
+  playerCharacter = initGame(scene, sharedState); // Adjusted to return the player character
+  animate();
+  console.log('setup', playerCharacter);
+
 }
 
-function updateCamera(playerCharacter, camera, CAMERA_OFFSET) {
-	// Apply the rotation to the camera's position
-	const rotationQuat = new THREE.Quaternion();
-	rotationQuat.setFromEuler(
-		new THREE.Euler(currentRotation.x, currentRotation.y, 0, "YXZ")
-	); // Apply rotation
-
-	// Calculate the new camera offset based on the rotation
-	const cameraOffset = new THREE.Vector3(
-		CAMERA_OFFSET.x,
-		CAMERA_OFFSET.y,
-		CAMERA_OFFSET.z
-	);
-	cameraOffset.applyQuaternion(rotationQuat); // Apply the rotation to the offset
-	if (cameraOffset.y < 0) {
-		cameraOffset.y = 0;
-	}
-	// Smoothly move the camera towards the target position based on the rotated offset
-	const targetPosition = playerCharacter.position.clone().add(cameraOffset);
-	camera.position.lerp(targetPosition, 0.1); // Smoothly follow player
-
-	// Ensure the camera always looks at the player character
-	camera.lookAt(playerCharacter.position);
-}
 setup();
+
 // Animation loop
 function animate() {
-  requestAnimationFrame(animate);
+	requestAnimationFrame(animate);
+	// Update camera position smoothly
+	let result = updateGame();
+	playerCharacter = result.character;
+	const delta = clock.getDelta(); // Time since the last frame
 
-  // Update the game state
-  
-
-  // Update camera position smoothly
-  if (playerCharacter) {
-	updateCamera(playerCharacter, camera, CAMERA_OFFSET)
-  }
-  updateGame(camera);
-
-  renderer.render(scene, camera);
+	if (sharedState.mixer) sharedState.mixer.update(delta);
+	renderer.render(scene, result.camera);
 }
 
 animate();
 
-///////////////
-// Window Changes
-///////////////
+////////////////////////////////////////////////
+/////////////// Window Changes /////////////////
+////////////////////////////////////////////////
 
 // Resize listener
 window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
 });
 
 const popup = document.getElementById("popup");
