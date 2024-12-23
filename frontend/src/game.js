@@ -86,7 +86,8 @@ export function initGame(scene, sharedState) {
   );
 
 	const canvas = document.querySelector("#gameCanvas");
-  canvas.addEventListener("click", onMouseClick, false);
+  canvas.addEventListener("mousedown", onMouseDown);
+  canvas.addEventListener("mouseup", onMouseUp);
 }
 
 
@@ -116,6 +117,22 @@ function createBuildings(scene) {
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+
+let mouseDownTime = 0; // Time when mouse is pressed down
+const CLICK_THRESHOLD = 300; // Time in milliseconds to consider it a short click (e.g., 300ms)
+
+function onMouseDown() {
+  mouseDownTime = Date.now(); // Record the time when the mouse is pressed
+}
+
+function onMouseUp(event) {
+  const clickDuration = Date.now() - mouseDownTime; // Calculate how long the button was held down
+
+  if (clickDuration < CLICK_THRESHOLD) {
+    // If the click was short, set moving to true
+    onMouseClick(event); // Call your click handler function to move the character
+  }
+}
 
 function onMouseClick(event) {
   const raycaster = new THREE.Raycaster();
@@ -157,31 +174,33 @@ export function updateGame() {
     updateCamera(character, camera, CAMERA_OFFSET);
   }
 
-	
-
 	let direction = new THREE.Vector3();
 	let finalDirection = new THREE.Vector3();
 
-	if (localStorage.getItem('visited') === "true" && !moving) {
+	if (localStorage.getItem('visited') === "true") {
 		if (keys["w"]) {
+			moving = false;
 			camera.getWorldDirection(direction);
 			direction.y = 0;
 			direction = direction.normalize();
 			finalDirection.add(direction);
 		}
 		if (keys["s"]) {
+			moving = false;
 			camera.getWorldDirection(direction);
 			direction.y = 0;
 			direction = direction.normalize().negate();
 			finalDirection.add(direction);
 		}
 		if (keys["a"]) {
+			moving = false;
 			camera.getWorldDirection(direction);
 			direction.y = 0;
 			direction = new THREE.Vector3(direction.z, 0, -direction.x).normalize();
 			finalDirection.add(direction);
 		}
 		if (keys["d"]) {
+			moving = false;
 			camera.getWorldDirection(direction);
 			direction.y = 0;
 			direction = new THREE.Vector3(-direction.z, 0, direction.x).normalize();
