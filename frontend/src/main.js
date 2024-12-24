@@ -8,7 +8,7 @@ import { RectAreaLightUniformsLib } from "three/examples/jsm/Addons.js";
 const canvas = document.querySelector("#gameCanvas");
 const renderer = new THREE.WebGLRenderer({ canvas });
 
-renderer.setClearColor(0x80e8ff, 1);
+renderer.setClearColor(0xfad998, 1);
 renderer.shadowMap.enabled = true; // Enable shadows
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Shadow quality
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -79,7 +79,7 @@ createSphericalGrid(radius, gridDivisions);
 ////////////////////////////////////////////////
 ///////////////////// Lights ///////////////////
 ////////////////////////////////////////////////
-const directionalLight = new THREE.DirectionalLight(0xffe8a3, 4);
+const directionalLight = new THREE.DirectionalLight(0xfabe57, 4);
 directionalLight.position.set(800, 500, 300); // Position the light
 directionalLight.castShadow = true; // Enable shadows
 directionalLight.shadow.camera.near = 0.5; // Shadow camera near plane
