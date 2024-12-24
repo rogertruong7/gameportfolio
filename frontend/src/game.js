@@ -2,6 +2,8 @@ import * as THREE from "three";
 import { showInterior } from "./building";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { CAMERA_OFFSET } from "./main";
+import { scene } from "./main";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 
 const SPEED = 3; // Movement SPEED
 const CAMERA_ROTATION_SPEED = 0.0015;
@@ -12,6 +14,8 @@ let character,
 let buildings;
 let keys = {}; // Track active keys
 let floor;
+let loading = true;
+let mainScene;
 
 const camera = new THREE.PerspectiveCamera(
   60,
@@ -24,6 +28,8 @@ const loader = new GLTFLoader();
 
 export function initGame(scene, sharedState) {
   // Game floor
+  createBuildings(scene);
+
   const floorGeometry = new THREE.BoxGeometry(1000, 1000, 200);
   const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x74d682 });
   floor = new THREE.Mesh(floorGeometry, floorMaterial);
@@ -31,7 +37,7 @@ export function initGame(scene, sharedState) {
   floor.position.set(0, -200, 0);
   floor.castShadow = false; // The floor doesn't cast shadows, it just receives them
   floor.receiveShadow = true;
-   // scene.add(floor);
+  // scene.add(floor);
   // Add buildings with doors
 
   loader.load(
@@ -47,7 +53,6 @@ export function initGame(scene, sharedState) {
       });
       floor.scale.set(0.8, 0.8, 0.8);
 
-
       scene.add(floor);
     },
     function (xhr) {
@@ -59,7 +64,7 @@ export function initGame(scene, sharedState) {
       console.error(error);
     }
   );
-  createBuildings(scene);
+
   targetPosition = new THREE.Vector3(0, 20, 0);
   // Add mouse and keyboard controls
   document.addEventListener("keydown", (event) => onKeyDown(event, scene));
@@ -131,19 +136,22 @@ function createBuildings(scene) {
         }
       });
       buildings.scale.set(0.8, 0.8, 0.8);
-
+      buildings.name = "buildings";
+      console.log(buildings);
       scene.add(buildings);
     },
     function (xhr) {
       //While it is loading, log the progress
       console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      if ((xhr.loaded / xhr.total) * 100 === 100) {
+        loading = false;
+      }
     },
     function (error) {
       console.log("bye");
       console.error(error);
     }
   );
-
 
   // const buildingMaterial = new THREE.MeshPhongMaterial({ color: 0x574000 });
   // for (let i = 0; i < 3; i++) {
@@ -186,7 +194,10 @@ function onMouseUp(event) {
   }
 }
 
+let darkSpot;
+
 function onMouseClick(event) {
+  scene.remove(darkSpot);
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
@@ -197,10 +208,27 @@ function onMouseClick(event) {
 
   const intersects = raycaster.intersectObject(floor);
   if (intersects.length > 0) {
+    console.log("Mouse clicked on ", intersects[0].point);
     targetPosition.copy(intersects[0].point);
     targetPosition.y = 20; // Match character height
     clickMoving = true;
+
+    createDarkSpot(intersects[0].point);
   }
+}
+
+function createDarkSpot(position) {
+  const darkSpotGeometry = new THREE.CircleGeometry(20, 6); // Radius and segments
+  const darkSpotMaterial = new THREE.MeshBasicMaterial({
+    color: 0x000000,
+    opacity: 0.5,
+    transparent: true,
+  });
+  darkSpot = new THREE.Mesh(darkSpotGeometry, darkSpotMaterial);
+  darkSpot.rotation.x = -Math.PI / 2; // Align with the floor
+  darkSpot.position.copy(position);
+  darkSpot.position.y += 1.5; // Slightly above the floor to avoid z-fighting
+  scene.add(darkSpot);
 }
 
 // Listen for mouse clicks and move the character
@@ -213,6 +241,7 @@ function onKeyDown(event, scene) {
   keys[event.key.toLowerCase()] = true; // Track key press
   if (event.code === "Space") {
     spacePressed(scene);
+    scene.remove(darkSpot);
   }
 }
 
@@ -222,6 +251,22 @@ function onKeyUp(event) {
 
 // Move character toward target position
 export function updateGame() {
+  if (!loading && scene.getObjectByName("buildings")) {
+    const loadingScreen = document.getElementById("loading_screen");
+    loadingScreen.style.display = "none";
+
+    // Popup
+    const popup = document.getElementById("popup");
+    const okButton = document.getElementById("okButton");
+    if (localStorage.getItem("visited") !== "true") {
+      popup.style.display = "flex"; // Make the popup visible
+      document.body.style.cursor = "grab"; // Make the cursor visible during the popup
+    }
+    okButton.addEventListener("click", () => {
+      popup.style.display = "none";
+      localStorage.setItem("visited", true);
+    });
+  }
   if (character) {
     updateCamera(character, camera, CAMERA_OFFSET);
   }
@@ -231,6 +276,7 @@ export function updateGame() {
 
   if (localStorage.getItem("visited") === "true") {
     if (keys["w"]) {
+      scene.remove(darkSpot);
       clickMoving = false;
       camera.getWorldDirection(direction);
       direction.y = 0;
@@ -238,6 +284,7 @@ export function updateGame() {
       finalDirection.add(direction);
     }
     if (keys["s"]) {
+      scene.remove(darkSpot);
       clickMoving = false;
       camera.getWorldDirection(direction);
       direction.y = 0;
@@ -245,6 +292,7 @@ export function updateGame() {
       finalDirection.add(direction);
     }
     if (keys["a"]) {
+      scene.remove(darkSpot);
       clickMoving = false;
       camera.getWorldDirection(direction);
       direction.y = 0;
@@ -252,6 +300,7 @@ export function updateGame() {
       finalDirection.add(direction);
     }
     if (keys["d"]) {
+      scene.remove(darkSpot);
       clickMoving = false;
       camera.getWorldDirection(direction);
       direction.y = 0;
@@ -264,7 +313,7 @@ export function updateGame() {
     const movingDirection = targetPosition.clone().sub(character.position);
     movingDirection.y = 0;
     // If the distance to target is large enough, move the character
-    if (movingDirection.length() > 1) {
+    if (movingDirection.length() > 3) {
       const stepDirection = movingDirection.normalize().multiplyScalar(SPEED); // Step size
 
       // Check if the next step leads to a collision
@@ -274,9 +323,15 @@ export function updateGame() {
       if (!collisionNormal) {
         // No collision, move the character
         character.position.add(stepDirection);
-        updateRotation(movingDirection); // Rotate the character towards the target direction
+        updateRotation(stepDirection);
+      } else {
+        scene.remove(darkSpot);
+        console.log(clickMoving);
+        clickMoving = false;
       }
     } else {
+      scene.remove(darkSpot);
+      console.log(clickMoving);
       clickMoving = false; // Stop moving when the target is reached
     }
   }
@@ -394,28 +449,24 @@ function updateCamera(playerCharacter, camera, CAMERA_OFFSET) {
 
 function isCollision(newPosition) {
   // Define character as a sphere for collision purposes
-  const characterRadius = 50; // Approximate radius of the character
-  const characterSphere = new THREE.Sphere(newPosition, characterRadius);
+  const characterRadius = 40; // Approximate radius of the character
+  const characterHitbox = new THREE.Sphere(newPosition, characterRadius);
 
   let collisionNormal = null;
 
   if (buildings !== undefined) {
-    console.log("hello world")
     buildings.traverse((child) => {
       if (child.isMesh) {
         const partBoundingBox = new THREE.Box3().setFromObject(child);
 
         // Store the hitbox for collision checks
         child.userData.hitbox = partBoundingBox;
-
-
       }
     });
     buildings.traverse((child) => {
       if (child.isMesh && child.userData.hitbox) {
         const hitbox = child.userData.hitbox;
-        if (hitbox.intersectsSphere(characterSphere)) {
-          console.log("yo chat");
+        if (hitbox.intersectsSphere(characterHitbox)) {
           // Calculate the closest point on the building's bounding box to the character
           const closestPoint = new THREE.Vector3(
             Math.max(hitbox.min.x, Math.min(newPosition.x, hitbox.max.x)),
@@ -432,35 +483,13 @@ function isCollision(newPosition) {
         }
       }
     });
-    // Check for intersection between sphere and box
-    // if (buildingBox.intersectsSphere(characterSphere)) {
-    //   console.log("yo chat")
-    //   // Calculate the closest point on the building's bounding box to the character
-    //   const closestPoint = new THREE.Vector3(
-    //     Math.max(
-    //       buildingBox.min.x,
-    //       Math.min(newPosition.x, buildingBox.max.x)
-    //     ),
-    //     Math.max(
-    //       buildingBox.min.y,
-    //       Math.min(newPosition.y, buildingBox.max.y)
-    //     ),
-    //     Math.max(buildingBox.min.z, Math.min(newPosition.z, buildingBox.max.z))
-    //   );
-
-    //   // Calculate collision normal
-    //   collisionNormal = new THREE.Vector3()
-    //     .subVectors(newPosition, closestPoint)
-    //     .normalize();
-
-    //   collisionNormal.y = 0; // Flatten the normal to the XZ plane
-    // }
   }
   return collisionNormal; // Return the collision normal or null
 }
 
 // Enter a building and show projects
 function enterBuilding(scene, building) {
+  mainScene = scene;
   scene.clear(); // Clear the current scene
   showInterior(scene, building);
 }
@@ -479,3 +508,5 @@ window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 });
+
+const resetButton = document.getElementById("resetButton");

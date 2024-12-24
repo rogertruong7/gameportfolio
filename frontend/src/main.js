@@ -13,7 +13,7 @@ renderer.shadowMap.enabled = true; // Enable shadows
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Shadow quality
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
-const scene = new THREE.Scene();
+export const scene = new THREE.Scene();
 export const CAMERA_OFFSET = new THREE.Vector3(500, 1000, 500);
 
 document.body.style.cursor = "grab";
@@ -91,8 +91,6 @@ directionalLight.shadow.camera.bottom = -4000; // Set shadow camera bottom
 
 scene.add(directionalLight);
 
-
-
 // Add an ambient light for base illumination
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // Soft white light
 scene.add(ambientLight);
@@ -135,19 +133,4 @@ animate();
 // Resize listener
 window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-const popup = document.getElementById("popup");
-const okButton = document.getElementById("okButton");
-
-window.addEventListener("load", () => {
-  if (localStorage.getItem("visited") !== "true") {
-    popup.style.display = "flex"; // Make the popup visible
-    document.body.style.cursor = "grab"; // Make the cursor visible during the popup
-  }
-});
-
-okButton.addEventListener("click", () => {
-  popup.style.display = "none";
-  localStorage.setItem("visited", true);
 });
