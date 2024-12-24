@@ -1,6 +1,7 @@
 import "./style.css";
 import * as THREE from "three";
 import { initGame, updateGame } from "./game.js";
+import { RectAreaLightUniformsLib } from "three/examples/jsm/Addons.js";
 
 // Select the canvas and set up the renderer
 
@@ -78,7 +79,7 @@ createSphericalGrid(radius, gridDivisions);
 ////////////////////////////////////////////////
 ///////////////////// Lights ///////////////////
 ////////////////////////////////////////////////
-const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+const directionalLight = new THREE.DirectionalLight(0xffe8a3, 4);
 directionalLight.position.set(800, 500, 300); // Position the light
 directionalLight.castShadow = true; // Enable shadows
 directionalLight.shadow.camera.near = 0.5; // Shadow camera near plane
@@ -90,8 +91,10 @@ directionalLight.shadow.camera.bottom = -4000; // Set shadow camera bottom
 
 scene.add(directionalLight);
 
+
+
 // Add an ambient light for base illumination
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.2); // Soft white light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // Soft white light
 scene.add(ambientLight);
 
 ////////////////////////////////////////////////
