@@ -86,6 +86,7 @@ export function initGame(scene, sharedState) {
           node.receiveShadow = true;
         }
       });
+      character.rotation.y = Math.PI;
       character.scale.set(0.15, 0.15, 0.15);
       console.log(character);
 
@@ -251,6 +252,7 @@ function onKeyUp(event) {
 
 // Move character toward target position
 export function updateGame() {
+  
   if (!loading && scene.getObjectByName("buildings")) {
     const loadingScreen = document.getElementById("loading_screen");
     loadingScreen.style.display = "none";
@@ -266,6 +268,9 @@ export function updateGame() {
       popup.style.display = "none";
       localStorage.setItem("visited", true);
     });
+
+    const gameButtons = document.getElementById('gameButtons');
+    gameButtons.style.display = 'flex';
   }
   if (character) {
     updateCamera(character, camera, CAMERA_OFFSET);
@@ -510,3 +515,11 @@ window.addEventListener("resize", () => {
 });
 
 const resetButton = document.getElementById("resetButton");
+
+resetButton.addEventListener('click', (e) => {
+  character.position.set(0, 0, 900);
+  scene.remove(darkSpot);
+  clickMoving = false;
+  keys = {};
+  character.rotation.y = Math.PI;
+})
