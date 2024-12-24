@@ -38,7 +38,7 @@ export function initGame(scene, sharedState) {
     "assets/floor.glb",
     function (gltf) {
       floor = gltf.scene;
-      floor.position.set(-100, 32, -100);
+      floor.position.set(-70, 32, 450);
       floor.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = false;
@@ -74,7 +74,7 @@ export function initGame(scene, sharedState) {
     "assets/toon_cat_free/scene.gltf",
     function (gltf) {
       character = gltf.scene;
-      character.position.set(0, 0, 0);
+      character.position.set(0, 0, 900);
       character.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = true;
@@ -123,7 +123,7 @@ function createBuildings(scene) {
     "assets/buildings.glb",
     function (gltf) {
       buildings = gltf.scene;
-      buildings.position.set(-100, 32, -100);
+      buildings.position.set(-70, 32, 450);
       buildings.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = true;
@@ -399,29 +399,63 @@ function isCollision(newPosition) {
 
   let collisionNormal = null;
 
-  // Check collision against each building
-  // for (let building of buildings) {
-  //   const buildingBox = new THREE.Box3().setFromObject(building);
+  if (buildings !== undefined) {
+    console.log("hello world")
+    buildings.traverse((child) => {
+      if (child.isMesh) {
+        const partBoundingBox = new THREE.Box3().setFromObject(child);
 
-  //   // Check for intersection between sphere and box
-  //   if (buildingBox.intersectsSphere(characterSphere)) {
-  //     // Calculate the closest point on the building's bounding box to the character
-  //     const closestPoint = new THREE.Vector3(
-  //       Math.max(buildingBox.min.x, Math.min(newPosition.x, buildingBox.max.x)),
-  //       Math.max(buildingBox.min.y, Math.min(newPosition.y, buildingBox.max.y)),
-  //       Math.max(buildingBox.min.z, Math.min(newPosition.z, buildingBox.max.z))
-  //     );
+        // Store the hitbox for collision checks
+        child.userData.hitbox = partBoundingBox;
 
-  //     // Calculate collision normal
-  //     collisionNormal = new THREE.Vector3()
-  //       .subVectors(newPosition, closestPoint)
-  //       .normalize();
 
-  //     collisionNormal.y = 0; // Flatten the normal to the XZ plane
-  //     break; // Only process the first collision
-  //   }
-  // }
+      }
+    });
+    buildings.traverse((child) => {
+      if (child.isMesh && child.userData.hitbox) {
+        const hitbox = child.userData.hitbox;
+        if (hitbox.intersectsSphere(characterSphere)) {
+          console.log("yo chat");
+          // Calculate the closest point on the building's bounding box to the character
+          const closestPoint = new THREE.Vector3(
+            Math.max(hitbox.min.x, Math.min(newPosition.x, hitbox.max.x)),
+            Math.max(hitbox.min.y, Math.min(newPosition.y, hitbox.max.y)),
+            Math.max(hitbox.min.z, Math.min(newPosition.z, hitbox.max.z))
+          );
 
+          // Calculate collision normal
+          collisionNormal = new THREE.Vector3()
+            .subVectors(newPosition, closestPoint)
+            .normalize();
+
+          collisionNormal.y = 0; // Flatten the normal to the XZ plane
+        }
+      }
+    });
+    // Check for intersection between sphere and box
+    // if (buildingBox.intersectsSphere(characterSphere)) {
+    //   console.log("yo chat")
+    //   // Calculate the closest point on the building's bounding box to the character
+    //   const closestPoint = new THREE.Vector3(
+    //     Math.max(
+    //       buildingBox.min.x,
+    //       Math.min(newPosition.x, buildingBox.max.x)
+    //     ),
+    //     Math.max(
+    //       buildingBox.min.y,
+    //       Math.min(newPosition.y, buildingBox.max.y)
+    //     ),
+    //     Math.max(buildingBox.min.z, Math.min(newPosition.z, buildingBox.max.z))
+    //   );
+
+    //   // Calculate collision normal
+    //   collisionNormal = new THREE.Vector3()
+    //     .subVectors(newPosition, closestPoint)
+    //     .normalize();
+
+    //   collisionNormal.y = 0; // Flatten the normal to the XZ plane
+    // }
+  }
   return collisionNormal; // Return the collision normal or null
 }
 
