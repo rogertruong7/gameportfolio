@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { showInterior } from "./building";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { CAMERA_OFFSET } from "./main";
-import { scene } from "./main";
+import { scene, renderer } from "./main";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 
 const SPEED = 3; // Movement SPEED
@@ -16,6 +16,9 @@ let keys = {}; // Track active keys
 let floor;
 let loading = true;
 let mainScene;
+let darkSpot;
+let startPosition = [10, 0, 270];
+let currentScene;
 
 const camera = new THREE.PerspectiveCamera(
   60,
@@ -26,20 +29,11 @@ const camera = new THREE.PerspectiveCamera(
 
 const loader = new GLTFLoader();
 
-export function initGame(scene, sharedState) {
-  // Game floor
+export function initGame(sharedState) {
+  // Buildings
   createBuildings(scene);
 
-  const floorGeometry = new THREE.BoxGeometry(1000, 1000, 200);
-  const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x74d682 });
-  floor = new THREE.Mesh(floorGeometry, floorMaterial);
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.set(0, -200, 0);
-  floor.castShadow = false; // The floor doesn't cast shadows, it just receives them
-  floor.receiveShadow = true;
-  // scene.add(floor);
-  // Add buildings with doors
-
+  // Game floor
   loader.load(
     "assets/floor.glb",
     function (gltf) {
@@ -52,7 +46,7 @@ export function initGame(scene, sharedState) {
         }
       });
       floor.scale.set(0.8, 0.8, 0.8);
-
+      floor.name = "floor";
       scene.add(floor);
     },
     function (xhr) {
@@ -79,7 +73,7 @@ export function initGame(scene, sharedState) {
     "assets/toon_cat_free/scene.gltf",
     function (gltf) {
       character = gltf.scene;
-      character.position.set(0, 0, 900);
+      character.position.set(...startPosition);
       character.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = true;
@@ -195,8 +189,6 @@ function onMouseUp(event) {
   }
 }
 
-let darkSpot;
-
 function onMouseClick(event) {
   scene.remove(darkSpot);
   const raycaster = new THREE.Raycaster();
@@ -250,27 +242,37 @@ function onKeyUp(event) {
   keys[event.key.toLowerCase()] = false; // Track key release
 }
 
+function appearingItemsAfterLoad() {
+  const loadingScreen = document.getElementById("loading_screen");
+  loadingScreen.style.display = "none";
+
+  // Popup
+  const popup = document.getElementById("popup");
+  const okButton = document.getElementById("okButton");
+  if (localStorage.getItem("visited") !== "true") {
+    popup.style.display = "flex"; // Make the popup visible
+    document.body.style.cursor = "grab"; // Make the cursor visible during the popup
+  }
+  okButton.addEventListener("click", () => {
+    popup.style.display = "none";
+    localStorage.setItem("visited", true);
+  });
+
+  const gameButtons = document.getElementById("gameButtons");
+  gameButtons.style.display = "flex";
+}
+
 // Move character toward target position
+
 export function updateGame() {
-  
-  if (!loading && scene.getObjectByName("buildings")) {
-    const loadingScreen = document.getElementById("loading_screen");
-    loadingScreen.style.display = "none";
-
-    // Popup
-    const popup = document.getElementById("popup");
-    const okButton = document.getElementById("okButton");
-    if (localStorage.getItem("visited") !== "true") {
-      popup.style.display = "flex"; // Make the popup visible
-      document.body.style.cursor = "grab"; // Make the cursor visible during the popup
-    }
-    okButton.addEventListener("click", () => {
-      popup.style.display = "none";
-      localStorage.setItem("visited", true);
-    });
-
-    const gameButtons = document.getElementById('gameButtons');
-    gameButtons.style.display = 'flex';
+  mainScene = scene;
+  currentScene = scene;
+  if (
+    !loading &&
+    scene.getObjectByName("buildings") &&
+    scene.getObjectByName("floor")
+  ) {
+    appearingItemsAfterLoad();
   }
   if (character) {
     updateCamera(character, camera, CAMERA_OFFSET);
@@ -359,7 +361,7 @@ export function updateGame() {
       }
     }
   }
-  return { character, camera };
+  return { character, camera, currentScene };
 }
 
 let lastDirection = new THREE.Vector3(0, 0, 1); // Default direction
@@ -516,10 +518,11 @@ window.addEventListener("resize", () => {
 
 const resetButton = document.getElementById("resetButton");
 
-resetButton.addEventListener('click', (e) => {
-  character.position.set(0, 0, 900);
+resetButton.addEventListener("click", (e) => {
+  renderer.render(mainScene, camera);
+  character.position.set(...startPosition);
   scene.remove(darkSpot);
   clickMoving = false;
   keys = {};
   character.rotation.y = Math.PI;
-})
+});

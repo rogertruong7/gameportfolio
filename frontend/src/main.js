@@ -6,7 +6,7 @@ import { RectAreaLightUniformsLib } from "three/examples/jsm/Addons.js";
 // Select the canvas and set up the renderer
 
 const canvas = document.querySelector("#gameCanvas");
-const renderer = new THREE.WebGLRenderer({ canvas });
+export const renderer = new THREE.WebGLRenderer({ canvas });
 
 renderer.setClearColor(0xfad998, 1);
 renderer.shadowMap.enabled = true; // Enable shadows
@@ -14,7 +14,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Shadow quality
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 export const scene = new THREE.Scene();
-export const CAMERA_OFFSET = new THREE.Vector3(500, 1000, 500);
+export const CAMERA_OFFSET = new THREE.Vector3(800, 800, 800);
 
 document.body.style.cursor = "grab";
 
@@ -102,10 +102,11 @@ scene.add(ambientLight);
 // Store reference to the player character
 let playerCharacter;
 const sharedState = { mixer: null };
+let currentScene;
 
 const clock = new THREE.Clock();
 function setup() {
-  playerCharacter = initGame(scene, sharedState); // Adjusted to return the player character
+  playerCharacter = initGame(sharedState); // Adjusted to return the player character
   animate();
   console.log("setup", playerCharacter);
 }
@@ -113,15 +114,16 @@ function setup() {
 setup();
 
 // Animation loop
-function animate() {
+export function animate() {
   requestAnimationFrame(animate);
   // Update camera position smoothly
   let result = updateGame();
   playerCharacter = result.character;
+  currentScene = result.currentScene;
   const delta = clock.getDelta(); // Time since the last frame
 
   if (sharedState.mixer) sharedState.mixer.update(delta);
-  renderer.render(scene, result.camera);
+  renderer.render(currentScene, result.camera);
 }
 
 animate();
