@@ -13,55 +13,61 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Shadow quality
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 const scene = new THREE.Scene();
-export const CAMERA_OFFSET = new THREE.Vector3(500, 800, 500); 
+export const CAMERA_OFFSET = new THREE.Vector3(500, 1000, 500);
 
 document.body.style.cursor = "grab";
 
 // Create a spherical grid
-const radius = 2000;  // Radius of the sphere
-const gridDivisions = 50;  // Number of grid lines (can adjust for more or less)
+const radius = 2000; // Radius of the sphere
+const gridDivisions = 50; // Number of grid lines (can adjust for more or less)
 
 function createSphericalGrid(radius, divisions) {
   const gridMaterial = new THREE.LineBasicMaterial({
-    color: 0x15709e,
+    color: 0xffffff,
     opacity: 0.5,
     transparent: true,
   });
 
   // Create horizontal circles (latitudes)
   for (let i = 0; i <= divisions; i++) {
-    const lat = Math.PI * i / divisions - Math.PI / 2;  // Latitude (ranging from -pi/2 to pi/2)
+    const lat = (Math.PI * i) / divisions - Math.PI / 2; // Latitude (ranging from -pi/2 to pi/2)
     const geometry = new THREE.BufferGeometry();
     const positions = [];
-    
+
     for (let j = 0; j <= divisions; j++) {
-      const lon = 2 * Math.PI * j / divisions;  // Longitude (ranging from 0 to 2pi)
+      const lon = (2 * Math.PI * j) / divisions; // Longitude (ranging from 0 to 2pi)
       const x = radius * Math.cos(lat) * Math.cos(lon);
       const y = radius * Math.sin(lat);
       const z = radius * Math.cos(lat) * Math.sin(lon);
-      positions.push(x, y, z);  // Add each vertex to the positions array
+      positions.push(x, y, z); // Add each vertex to the positions array
     }
 
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3)); // Set the positions attribute
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(positions, 3)
+    ); // Set the positions attribute
     const line = new THREE.Line(geometry, gridMaterial);
     scene.add(line);
   }
 
   // Create vertical circles (longitudes)
   for (let i = 0; i <= divisions; i++) {
-    const lon = 2 * Math.PI * i / divisions;  // Longitude (ranging from 0 to 2pi)
+    const lon = (2 * Math.PI * i) / divisions; // Longitude (ranging from 0 to 2pi)
     const geometry = new THREE.BufferGeometry();
     const positions = [];
-    
+
     for (let j = 0; j <= divisions; j++) {
-      const lat = Math.PI * j / divisions - Math.PI / 2;  // Latitude (ranging from -pi/2 to pi/2)
+      const lat = (Math.PI * j) / divisions - Math.PI / 2; // Latitude (ranging from -pi/2 to pi/2)
       const x = radius * Math.cos(lat) * Math.cos(lon);
       const y = radius * Math.sin(lat);
       const z = radius * Math.cos(lat) * Math.sin(lon);
-      positions.push(x, y, z);  // Add each vertex to the positions array
+      positions.push(x, y, z); // Add each vertex to the positions array
     }
 
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3)); // Set the positions attribute
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(positions, 3)
+    ); // Set the positions attribute
     const line = new THREE.Line(geometry, gridMaterial);
     scene.add(line);
   }
@@ -88,9 +94,6 @@ scene.add(directionalLight);
 const ambientLight = new THREE.AmbientLight(0xffffff, 1.2); // Soft white light
 scene.add(ambientLight);
 
-
-
-
 ////////////////////////////////////////////////
 /////////////////// Game ///////////////////////
 ////////////////////////////////////////////////
@@ -103,22 +106,21 @@ const clock = new THREE.Clock();
 function setup() {
   playerCharacter = initGame(scene, sharedState); // Adjusted to return the player character
   animate();
-  console.log('setup', playerCharacter);
-
+  console.log("setup", playerCharacter);
 }
 
 setup();
 
 // Animation loop
 function animate() {
-	requestAnimationFrame(animate);
-	// Update camera position smoothly
-	let result = updateGame();
-	playerCharacter = result.character;
-	const delta = clock.getDelta(); // Time since the last frame
+  requestAnimationFrame(animate);
+  // Update camera position smoothly
+  let result = updateGame();
+  playerCharacter = result.character;
+  const delta = clock.getDelta(); // Time since the last frame
 
-	if (sharedState.mixer) sharedState.mixer.update(delta);
-	renderer.render(scene, result.camera);
+  if (sharedState.mixer) sharedState.mixer.update(delta);
+  renderer.render(scene, result.camera);
 }
 
 animate();
