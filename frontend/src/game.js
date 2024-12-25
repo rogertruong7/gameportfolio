@@ -35,6 +35,13 @@ const loader = new GLTFLoader();
 
 export function updateGame() {
   mainScene = scene;
+
+  if (texts.length > 0) {
+    texts.forEach((mesh) => {
+      mesh.lookAt(camera.position);
+    });
+  }
+
   if (currentScene === mainScene) {
     if (
       !loading &&
@@ -90,11 +97,11 @@ export function initGame(sharedState) {
   );
 
   const fontPath = "fonts/PixelifySans_Regular.json";
-  createText(scene, "PROJECTS", new THREE.Vector3(20, 100, 20), fontPath);
-  createText(scene, "ABOUT ME", new THREE.Vector3(60, 100, 60), fontPath);
-  createText(scene, "EXPERIENCE", new THREE.Vector3(100, 100, 100), fontPath);
-  createText(scene, "SKILLS", new THREE.Vector3(140, 100, 140), fontPath);
-  createText(scene, "SHOP", new THREE.Vector3(180, 100, 180), fontPath);
+  createText(scene, "PROJECTS", new THREE.Vector3(20, 210, 250), fontPath, 24);
+  createText(scene, "ABOUT ME", new THREE.Vector3(20, 170, 20), fontPath, 24);
+  createText(scene, "EXPERIENCES", new THREE.Vector3(190, 180, -100), fontPath, 20);
+  createText(scene, "SKILLS", new THREE.Vector3(390, 190, -100), fontPath, 24);
+  createText(scene, "SHOP", new THREE.Vector3(430, 120, 110), fontPath, 24);
 
   targetPosition = new THREE.Vector3(0, 20, 0);
   // Add mouse and keyboard controls
@@ -212,16 +219,22 @@ function createBuildings(scene) {
 
 
 
-function createText(scene, text, position, fontPath) {
+function createText(scene, text, position, fontPath, fontSize) {
   const loader = new FontLoader();
   loader.load(fontPath, (font) => {
     const textGeometry = new TextGeometry(text, {
       font: font,
-      size: 24,
+      size: fontSize,
       height: 10,
     });
+    textGeometry.computeBoundingBox();
+    const boundingBox = textGeometry.boundingBox;
+    const offsetX = (boundingBox.max.x - boundingBox.min.x) / 2;
+    const offsetY = (boundingBox.max.y - boundingBox.min.y) / 2;
+    const offsetZ = (boundingBox.max.z - boundingBox.min.z) / 2;
 
-    const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    textGeometry.translate(-offsetX, -offsetY, -offsetZ);
+    const textMaterial = new THREE.MeshStandardMaterial({ color: 0xa14e3d });
     const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
     textMesh.position.set(position.x, position.y, position.z);
