@@ -97,11 +97,11 @@ export function initGame(sharedState) {
   );
 
   const fontPath = "fonts/PixelifySans_Regular.json";
-  createText(scene, "PROJECTS", new THREE.Vector3(20, 210, 250), fontPath, 24);
-  createText(scene, "ABOUT ME", new THREE.Vector3(20, 170, 20), fontPath, 24);
-  createText(scene, "EXPERIENCES", new THREE.Vector3(190, 180, -100), fontPath, 20);
-  createText(scene, "SKILLS", new THREE.Vector3(390, 190, -100), fontPath, 24);
-  createText(scene, "SHOP", new THREE.Vector3(430, 120, 110), fontPath, 24);
+  createText(scene, "projects", new THREE.Vector3(25, 220, 250), fontPath, 24);
+  createText(scene, "about me", new THREE.Vector3(25, 180, 20), fontPath, 24);
+  createText(scene, "experiences", new THREE.Vector3(190, 180, -100), fontPath, 20);
+  createText(scene, "skills", new THREE.Vector3(400, 200, -100), fontPath, 24);
+  createText(scene, "shop", new THREE.Vector3(430, 140, 110), fontPath, 24);
 
   targetPosition = new THREE.Vector3(0, 20, 0);
   // Add mouse and keyboard controls
@@ -234,12 +234,15 @@ function createText(scene, text, position, fontPath, fontSize) {
     const offsetZ = (boundingBox.max.z - boundingBox.min.z) / 2;
 
     textGeometry.translate(-offsetX, -offsetY, -offsetZ);
-    const textMaterial = new THREE.MeshStandardMaterial({ color: 0xa14e3d });
+    const textMaterial = new THREE.MeshPhongMaterial({ color: 0xe67ae2 });
     const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
     textMesh.position.set(position.x, position.y, position.z);
+    textMesh.castShadow = true;
+    textMesh.receiveShadow = true;
     texts.push(textMesh);
     scene.add(textMesh);
+
   });
 }
 
@@ -251,16 +254,16 @@ function createText(scene, text, position, fontPath, fontSize) {
 //////////////////////////////////////////////////////////////////
 
 function createDoorways() {
-  const projectsDoorMin = new THREE.Vector3(129, -50, 162);
-  const projectsDoorMax = new THREE.Vector3(184, 50, 308);
-  const aboutMeMin = new THREE.Vector3(112, -50, -46);
-  const aboutMeMax = new THREE.Vector3(184, 50, 76);
-  const experienceMin = new THREE.Vector3(117, -50, -34);
-  const experienceMax = new THREE.Vector3(292, 50, 15);
-  const skillsMin = new THREE.Vector3(365, -50, -34);
-  const skillsMax = new THREE.Vector3(504, 50, 15);
-  const shopMin = new THREE.Vector3(365, -50, -34);
-  const shopMax = new THREE.Vector3(504, 50, 15);
+  const projectsDoorMin = new THREE.Vector3(129, -50, 142);
+  const projectsDoorMax = new THREE.Vector3(188, 50, 308);
+  const aboutMeMin = new THREE.Vector3(105, -50, -46);
+  const aboutMeMax = new THREE.Vector3(188, 50, 86);
+  const experienceMin = new THREE.Vector3(117, -50, -60);
+  const experienceMax = new THREE.Vector3(292, 50, 25);
+  const skillsMin = new THREE.Vector3(365, -50, -60);
+  const skillsMax = new THREE.Vector3(504, 50, 25);
+  const shopMin = new THREE.Vector3(365, -50, -60);
+  const shopMax = new THREE.Vector3(504, 50, 25);
 
   doorways.projects = new THREE.Box3(projectsDoorMin, projectsDoorMax);
   doorways.aboutMe = new THREE.Box3(aboutMeMin, aboutMeMax);
