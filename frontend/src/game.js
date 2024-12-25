@@ -1,11 +1,12 @@
 import * as THREE from "three";
-import { showInterior } from "./building";
+
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { CAMERA_OFFSET } from "./main";
 import { scene, renderer } from "./main";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+import { initProjectsGame } from "./projects";
 
-const SPEED = 3; // Movement SPEED
+const SPEED = 1.8; // Movement SPEED
 const CAMERA_ROTATION_SPEED = 0.0015;
 
 let character,
@@ -17,9 +18,10 @@ let floor;
 let loading = true;
 let mainScene;
 let darkSpot;
-let startPosition = [10, 0, 270];
+let startPosition = [176, -20, 126];
 let currentScene;
 
+let doorways = {};
 const camera = new THREE.PerspectiveCamera(
   60,
   window.innerWidth / window.innerHeight,
@@ -29,16 +31,43 @@ const camera = new THREE.PerspectiveCamera(
 
 const loader = new GLTFLoader();
 
+
+export function updateGame() {
+  mainScene = scene;
+  if (currentScene === mainScene) {
+    if (
+      !loading &&
+      scene.getObjectByName("buildings") &&
+      scene.getObjectByName("floor")
+    ) {
+      appearingItemsAfterLoad();
+      if (character) {
+        onDoorway(character);
+      }
+    }
+    if (character) {
+      updateCamera(character, camera, CAMERA_OFFSET);
+    }
+    let finalDirection = keyboardMovement();
+
+    clickToMove();
+    keyboardMovingSlide(finalDirection);
+  }
+  return { character, camera, currentScene };
+}
+
 export function initGame(sharedState) {
   // Buildings
+  currentScene = scene;
   createBuildings(scene);
-
+  createDetails(scene);
+  createDoorways();
   // Game floor
   loader.load(
     "assets/floor.glb",
     function (gltf) {
       floor = gltf.scene;
-      floor.position.set(-70, 32, 450);
+      floor.position.set(-70, 0, 450);
       floor.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = false;
@@ -51,7 +80,7 @@ export function initGame(sharedState) {
     },
     function (xhr) {
       //While it is loading, log the progress
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      // console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
     },
     function (error) {
       console.log("bye");
@@ -70,7 +99,7 @@ export function initGame(sharedState) {
   character = new THREE.Mesh(charGeometry, charMaterial);
 
   loader.load(
-    "assets/toon_cat_free/scene.gltf",
+    "assets/cloud/cloudme.glb",
     function (gltf) {
       character = gltf.scene;
       character.position.set(...startPosition);
@@ -80,10 +109,9 @@ export function initGame(sharedState) {
           node.receiveShadow = true;
         }
       });
-      character.rotation.y = Math.PI;
-      character.scale.set(0.15, 0.15, 0.15);
-      console.log(character);
 
+      character.scale.set(0.2, 0.2, 0.2);
+      character.rotation.y = -Math.PI / 4;
       scene.add(character);
       sharedState.mixer = new THREE.AnimationMixer(character);
 
@@ -102,10 +130,7 @@ export function initGame(sharedState) {
 
       return character;
     },
-    function (xhr) {
-      //While it is loading, log the progress
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-    },
+    function (xhr) {},
     function (error) {
       console.log("bye");
       console.error(error);
@@ -117,13 +142,42 @@ export function initGame(sharedState) {
   canvas.addEventListener("mouseup", onMouseUp);
 }
 
+function createDetails(scene) {
+  loader.load(
+    "assets/cherryTree1.glb",
+    function (gltf) {
+      let tree1 = gltf.scene;
+      tree1.position.set(50, -19, -90);
+      tree1.traverse((node) => {
+        if (node.isMesh) {
+          node.castShadow = true;
+          node.receiveShadow = true;
+        }
+      });
+      tree1.scale.set(16, 16, 16);
+      tree1.rotation.y = Math.PI / 2;
+      tree1.name = "tree1";
+
+      scene.add(tree1);
+    },
+    function (xhr) {
+      // //While it is loading, log the progress
+      // console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+    },
+    function (error) {
+      console.log("bye");
+      console.error(error);
+    }
+  );
+}
+
 // Create buildings and doors
 function createBuildings(scene) {
   loader.load(
-    "assets/buildings.glb",
+    "assets/buildingsSmall.glb",
     function (gltf) {
       buildings = gltf.scene;
-      buildings.position.set(-70, 32, 450);
+      buildings.position.set(-70, 0, 450);
       buildings.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = true;
@@ -132,12 +186,11 @@ function createBuildings(scene) {
       });
       buildings.scale.set(0.8, 0.8, 0.8);
       buildings.name = "buildings";
-      console.log(buildings);
       scene.add(buildings);
     },
     function (xhr) {
       //While it is loading, log the progress
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      // console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
       if ((xhr.loaded / xhr.total) * 100 === 100) {
         loading = false;
       }
@@ -147,30 +200,149 @@ function createBuildings(scene) {
       console.error(error);
     }
   );
-
-  // const buildingMaterial = new THREE.MeshPhongMaterial({ color: 0x574000 });
-  // for (let i = 0; i < 3; i++) {
-  //   const buildingGeometry = new THREE.BoxGeometry(100, 150, 100);
-  //   const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-  //   building.position.set(i * 200 - 300, 75, -200);
-  //   building.castShadow = true; // For buildings to cast shadows
-  //   building.receiveShadow = true; // For buildings to receive shadows
-  //   scene.add(building);
-
-  //   // Door indicator
-  //   const doorMaterial = new THREE.MeshBasicMaterial({ color: 0xc27b00 });
-  //   const doorGeometry = new THREE.BoxGeometry(20, 40, 5);
-  //   const door = new THREE.Mesh(doorGeometry, doorMaterial);
-  //   door.position.set(building.position.x, 20, building.position.z + 50);
-  //   building.door = door;
-  //   buildings.push(building);
-
-  //   scene.add(door);
-  // }
 }
 
 //////////////////////////////////////////////////////////////////
+//////////// Changing Scenes ////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+
+function createDoorways() {
+  const projectsDoorMin = new THREE.Vector3(129, -50, 162);
+  const projectsDoorMax = new THREE.Vector3(184, 50, 308);
+  const aboutMeMin = new THREE.Vector3(112, -50, -46);
+  const aboutMeMax = new THREE.Vector3(184, 50, 76);
+  const experienceMin = new THREE.Vector3(117, -50, -34);
+  const experienceMax = new THREE.Vector3(292, 50, 15);
+  const skillsMin = new THREE.Vector3(365, -50, -34);
+  const skillsMax = new THREE.Vector3(504, 50, 15);
+  const shopMin = new THREE.Vector3(365, -50, -34);
+  const shopMax = new THREE.Vector3(504, 50, 15);
+
+  doorways.projects = new THREE.Box3(projectsDoorMin, projectsDoorMax);
+  doorways.aboutMe = new THREE.Box3(aboutMeMin, aboutMeMax);
+  doorways.experience = new THREE.Box3(experienceMin, experienceMax);
+  doorways.skills = new THREE.Box3(skillsMin, skillsMax);
+  doorways.shop = new THREE.Box3(shopMin, shopMax);
+
+  // Object.entries(doorways).forEach(([showcase, box]) => {
+  //   scene.add(new THREE.Box3Helper(box, 0xff0000));
+  // });
+}
+
+export function resetPopupText() {
+  const popup = document.getElementById("entrance_popup_container");
+  popup.style.display = "none";
+  const buttons = document.querySelectorAll(".enter_button");
+
+  // Loop through each button and set its display style to 'none'
+  buttons.forEach((button) => {
+    button.style.display = "none";
+  });
+  document.getElementById("twoOptions").style.display = "none";
+  document.getElementById("oneOption").style.display = "none";
+}
+
+function turnOptionsOn(showcases, length) {
+  const buttons = document.querySelectorAll(".enter_button");
+  buttons.forEach((button) => {
+    button.style.display = "none";
+  });
+
+  // Showing popup
+  const popup = document.getElementById("entrance_popup_container");
+  popup.style.display = "flex";
+
+  // Showing text
+  if (length > 1) {
+    document.getElementById("oneOption").style.display = "none";
+    document.getElementById("twoOptions").style.display = "block";
+  } else {
+    document.getElementById("oneOption").style.display = "block";
+    document.getElementById("twoOptions").style.display = "none";
+  }
+
+  showcases.forEach((showcase) => {
+    switch (showcase) {
+      case "projects":
+        document.getElementById("projects_button").style.display = "flex";
+        break;
+      case "aboutMe":
+        document.getElementById("aboutme_button").style.display = "flex";
+        break;
+      case "experience":
+        document.getElementById("experience_button").style.display = "flex";
+        break;
+      case "skills":
+        document.getElementById("skills_button").style.display = "flex";
+        break;
+      case "shop":
+        document.getElementById("shop_button").style.display = "flex";
+        break;
+    }
+  });
+}
+
+function onDoorway(character) {
+  let standingOn = [];
+  let characterPosition = character.position;
+  if (doorways !== undefined) {
+    Object.entries(doorways).forEach(([showcase, box]) => {
+      if (box.containsPoint(characterPosition)) {
+        standingOn.push(showcase);
+      }
+    });
+  }
+  let length = standingOn.length;
+  if (length > 0) {
+    turnOptionsOn(standingOn, length);
+  } else {
+    resetPopupText();
+  }
+}
+
+function moveScene() {
+  mainScene = scene;
+  clickMoving = false;
+  keys = {};
+  scene.remove(darkSpot);
+  resetPopupText();
+}
+
+document
+  .getElementById("projects_button")
+  .addEventListener("click", function () {
+    moveScene();
+    currentScene = initProjectsGame();
+  });
+
+document
+  .getElementById("aboutme_button")
+  .addEventListener("click", function () {
+    // Code to run when the "Enter About Me" button is clicked
+    moveScene();
+    currentScene = initProjectsGame();
+  });
+
+document
+  .getElementById("experience_button")
+  .addEventListener("click", function () {
+    moveScene();
+    currentScene = initProjectsGame();
+  });
+
+document.getElementById("skills_button").addEventListener("click", function () {
+  moveScene();
+  currentScene = initProjectsGame();
+});
+
+document.getElementById("shop_button").addEventListener("click", function () {
+  // Code to run when the "Enter Shop" button is clicked
+  console.log("Entering Shop...");
+  currentScene = initProjectsGame();
+});
+
+//////////////////////////////////////////////////////////////////
+//////////////// Mouse Activities //////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
 let mouseDownTime = 0; // Time when mouse is pressed down
@@ -200,7 +372,7 @@ function onMouseClick(event) {
   raycaster.setFromCamera(mouse, camera); //scene.userData.camera
 
   const intersects = raycaster.intersectObject(floor);
-  if (intersects.length > 0) {
+  if (intersects.length > 0 && intersects[0].point.y > -25) {
     console.log("Mouse clicked on ", intersects[0].point);
     targetPosition.copy(intersects[0].point);
     targetPosition.y = 20; // Match character height
@@ -211,7 +383,7 @@ function onMouseClick(event) {
 }
 
 function createDarkSpot(position) {
-  const darkSpotGeometry = new THREE.CircleGeometry(20, 6); // Radius and segments
+  const darkSpotGeometry = new THREE.CircleGeometry(10, 6); // Radius and segments
   const darkSpotMaterial = new THREE.MeshBasicMaterial({
     color: 0x000000,
     opacity: 0.5,
@@ -232,10 +404,6 @@ function onWindowBlur() {
 
 function onKeyDown(event, scene) {
   keys[event.key.toLowerCase()] = true; // Track key press
-  if (event.code === "Space") {
-    spacePressed(scene);
-    scene.remove(darkSpot);
-  }
 }
 
 function onKeyUp(event) {
@@ -262,27 +430,15 @@ function appearingItemsAfterLoad() {
   gameButtons.style.display = "flex";
 }
 
-// Move character toward target position
+///////////////////////////////////////////////
+//////////////// MOVEMENT /////////////////////
+///////////////////////////////////////////////
 
-export function updateGame() {
-  mainScene = scene;
-  currentScene = scene;
-  if (
-    !loading &&
-    scene.getObjectByName("buildings") &&
-    scene.getObjectByName("floor")
-  ) {
-    appearingItemsAfterLoad();
-  }
-  if (character) {
-    updateCamera(character, camera, CAMERA_OFFSET);
-  }
-
+function keyboardMovement() {
   let direction = new THREE.Vector3();
   let finalDirection = new THREE.Vector3();
-
   if (localStorage.getItem("visited") === "true") {
-    if (keys["w"]) {
+    if (keys["w"] || keys["arrowup"]) {
       scene.remove(darkSpot);
       clickMoving = false;
       camera.getWorldDirection(direction);
@@ -290,7 +446,7 @@ export function updateGame() {
       direction = direction.normalize();
       finalDirection.add(direction);
     }
-    if (keys["s"]) {
+    if (keys["s"] || keys["arrowdown"]) {
       scene.remove(darkSpot);
       clickMoving = false;
       camera.getWorldDirection(direction);
@@ -298,7 +454,7 @@ export function updateGame() {
       direction = direction.normalize().negate();
       finalDirection.add(direction);
     }
-    if (keys["a"]) {
+    if (keys["a"] || keys["arrowleft"]) {
       scene.remove(darkSpot);
       clickMoving = false;
       camera.getWorldDirection(direction);
@@ -306,7 +462,7 @@ export function updateGame() {
       direction = new THREE.Vector3(direction.z, 0, -direction.x).normalize();
       finalDirection.add(direction);
     }
-    if (keys["d"]) {
+    if (keys["d"] || keys["arrowright"]) {
       scene.remove(darkSpot);
       clickMoving = false;
       camera.getWorldDirection(direction);
@@ -315,37 +471,47 @@ export function updateGame() {
       finalDirection.add(direction);
     }
   }
+  return finalDirection;
+}
 
+function clickToMove() {
   if (clickMoving && character !== undefined) {
     const movingDirection = targetPosition.clone().sub(character.position);
     movingDirection.y = 0;
     // If the distance to target is large enough, move the character
-    if (movingDirection.length() > 3) {
+    if (movingDirection.length() > SPEED) {
       const stepDirection = movingDirection.normalize().multiplyScalar(SPEED); // Step size
 
       // Check if the next step leads to a collision
       const newPosition = character.position.clone().add(stepDirection);
-      const collisionNormal = isCollision(newPosition); // Check for collision at new position
-
-      if (!collisionNormal) {
+      const result = isCollision(newPosition); // Check for collision at new position
+      if (!result) {
         // No collision, move the character
         character.position.add(stepDirection);
         updateRotation(stepDirection);
       } else {
         scene.remove(darkSpot);
-        console.log(clickMoving);
         clickMoving = false;
       }
     } else {
       scene.remove(darkSpot);
-      console.log(clickMoving);
       clickMoving = false; // Stop moving when the target is reached
     }
   }
+}
 
+function keyboardMovingSlide(finalDirection) {
   if (character !== undefined) {
     let newPosition = character.position.clone().add(finalDirection);
-    const collisionNormal = isCollision(newPosition);
+    const result = isCollision(newPosition);
+    let collisionNormal = null;
+    let wall = null;
+
+    if (result) {
+      collisionNormal = result.collisionNormal;
+      wall = result.collidingWall;
+    }
+
     updateRotation(finalDirection);
     if (!collisionNormal) {
       // No collision: move the character in the intended direction
@@ -355,13 +521,23 @@ export function updateGame() {
       const slideDirection = finalDirection
         .clone()
         .projectOnPlane(collisionNormal);
+
       if (slideDirection.length() > 0) {
         slideDirection.normalize();
-        character.position.addScaledVector(slideDirection, SPEED);
+        let slidingPosition = character.position
+          .clone()
+          .addScaledVector(slideDirection, SPEED);
+
+        // Check if the new sliding position causes a collision, excluding the current sliding wall
+        const collisionNormalAfterSlide = isCollision(slidingPosition, wall);
+
+        if (!collisionNormalAfterSlide) {
+          // If no collision, perform the slide movement
+          character.position.addScaledVector(slideDirection, SPEED);
+        }
       }
     }
   }
-  return { character, camera, currentScene };
 }
 
 let lastDirection = new THREE.Vector3(0, 0, 1); // Default direction
@@ -372,7 +548,8 @@ function updateRotation(inputVector) {
     lastDirection.copy(inputVector);
 
     // Calculate the target angle based on the input vector
-    const targetAngle = Math.atan2(inputVector.x, inputVector.z); // Angle in radians
+    const targetAngle = Math.atan2(inputVector.x, inputVector.z) - Math.PI / 2; // Angle in radians
+    // const targetAngle = Math.atan2(inputVector.x, inputVector.z);
 
     // Smoothly interpolate the character's current rotation to the target angle
     const currentAngle = character.rotation.y; // Current Y-axis rotation
@@ -406,10 +583,9 @@ document.addEventListener("mouseleave", () => {
 });
 
 document.addEventListener("mousemove", (event) => {
+  const deltaX = event.clientX - previousMousePosition.x;
+  const deltaY = event.clientY - previousMousePosition.y;
   if (isDragging) {
-    const deltaX = event.clientX - previousMousePosition.x;
-    const deltaY = event.clientY - previousMousePosition.y;
-
     // Update the current rotation based on mouse movement
     currentRotation.x -= deltaY * CAMERA_ROTATION_SPEED; // Pitch (up/down)
     currentRotation.y -= deltaX * CAMERA_ROTATION_SPEED; // Yaw (left/right)
@@ -419,6 +595,15 @@ document.addEventListener("mousemove", (event) => {
       -Math.PI / 2,
       Math.min(Math.PI / 2, currentRotation.x)
     );
+
+    // Update the previous mouse position for the next frame
+    previousMousePosition = { x: event.clientX, y: event.clientY };
+  } else {
+    // Update the current rotation based on mouse movement
+    currentRotation.x -= deltaY * 0.00005; // Pitch (up/down)
+    currentRotation.y -= deltaX * 0.00005; // Yaw (left/right)
+
+    // Limit vertical rotation to avoid flipping
 
     // Update the previous mouse position for the next frame
     previousMousePosition = { x: event.clientX, y: event.clientY };
@@ -454,61 +639,51 @@ function updateCamera(playerCharacter, camera, CAMERA_OFFSET) {
 ////////////// Collision //////////////////
 ////////////////////////////////////////////////
 
-function isCollision(newPosition) {
+const invisWalls = [];
+function isCollision(newPosition, ignoreWall = null) {
   // Define character as a sphere for collision purposes
-  const characterRadius = 40; // Approximate radius of the character
+  const characterRadius = 20; // Approximate radius of the character
   const characterHitbox = new THREE.Sphere(newPosition, characterRadius);
 
   let collisionNormal = null;
+  let collidingWall = null;
 
-  if (buildings !== undefined) {
-    buildings.traverse((child) => {
-      if (child.isMesh) {
-        const partBoundingBox = new THREE.Box3().setFromObject(child);
+  const box1Min = new THREE.Vector3(80, -21, -64);
+  const box1Max = new THREE.Vector3(560, 31, -64);
+  const box2Min = new THREE.Vector3(112, -21, -100);
+  const box2Max = new THREE.Vector3(112, 31, 504);
 
-        // Store the hitbox for collision checks
-        child.userData.hitbox = partBoundingBox;
-      }
-    });
-    buildings.traverse((child) => {
-      if (child.isMesh && child.userData.hitbox) {
-        const hitbox = child.userData.hitbox;
-        if (hitbox.intersectsSphere(characterHitbox)) {
-          // Calculate the closest point on the building's bounding box to the character
-          const closestPoint = new THREE.Vector3(
-            Math.max(hitbox.min.x, Math.min(newPosition.x, hitbox.max.x)),
-            Math.max(hitbox.min.y, Math.min(newPosition.y, hitbox.max.y)),
-            Math.max(hitbox.min.z, Math.min(newPosition.z, hitbox.max.z))
-          );
+  const rightWall = new THREE.Box3(box1Min, box1Max);
+  const leftWall = new THREE.Box3(box2Min, box2Max);
+  invisWalls.push(leftWall);
+  invisWalls.push(rightWall);
 
-          // Calculate collision normal
-          collisionNormal = new THREE.Vector3()
-            .subVectors(newPosition, closestPoint)
-            .normalize();
+  invisWalls.forEach((wall) => {
+    // Skip the wall that is passed as ignoreWall
+    if (wall === ignoreWall) return;
 
-          collisionNormal.y = 0; // Flatten the normal to the XZ plane
-        }
-      }
-    });
+    if (wall.intersectsSphere(characterHitbox)) {
+      // Calculate the closest point on the current wall's bounding box to the character
+      const closestPoint = new THREE.Vector3(
+        Math.max(wall.min.x, Math.min(newPosition.x, wall.max.x)),
+        Math.max(wall.min.y, Math.min(newPosition.y, wall.max.y)),
+        Math.max(wall.min.z, Math.min(newPosition.z, wall.max.z))
+      );
+      // Calculate collision normal
+      collisionNormal = new THREE.Vector3()
+        .subVectors(newPosition, closestPoint)
+        .normalize();
+
+      collisionNormal.y = 0; // Flatten the normal to the XZ plane
+      collidingWall = wall;
+    }
+  });
+
+  if (collisionNormal) {
+    return { collisionNormal, collidingWall };
   }
-  return collisionNormal; // Return the collision normal or null
-}
 
-// Enter a building and show projects
-function enterBuilding(scene, building) {
-  mainScene = scene;
-  scene.clear(); // Clear the current scene
-  showInterior(scene, building);
-}
-
-// Handle keyboard input for entering buildings
-function spacePressed(scene) {
-  const nearbyBuilding = buildings.find(
-    (building) => character.position.distanceTo(building.door.position) < 30
-  );
-  if (nearbyBuilding) {
-    enterBuilding(scene, nearbyBuilding);
-  }
+  return null;
 }
 
 window.addEventListener("resize", () => {
@@ -519,10 +694,14 @@ window.addEventListener("resize", () => {
 const resetButton = document.getElementById("resetButton");
 
 resetButton.addEventListener("click", (e) => {
-  renderer.render(mainScene, camera);
+  currentScene = mainScene;
   character.position.set(...startPosition);
   scene.remove(darkSpot);
   clickMoving = false;
   keys = {};
-  character.rotation.y = Math.PI;
+  character.rotation.y = -Math.PI / 4;
+});
+
+document.getElementById("back_button").addEventListener("click", () => {
+  currentScene = mainScene;
 });

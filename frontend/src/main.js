@@ -2,19 +2,20 @@ import "./style.css";
 import * as THREE from "three";
 import { initGame, updateGame } from "./game.js";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/Addons.js";
+import { updateInfoGame } from "./projects.js";
 
 // Select the canvas and set up the renderer
 
 const canvas = document.querySelector("#gameCanvas");
 export const renderer = new THREE.WebGLRenderer({ canvas });
 
-renderer.setClearColor(0xfad998, 1);
+renderer.setClearColor(0xffc9c9, 1); // fad998
 renderer.shadowMap.enabled = true; // Enable shadows
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Shadow quality
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 export const scene = new THREE.Scene();
-export const CAMERA_OFFSET = new THREE.Vector3(800, 800, 800);
+export const CAMERA_OFFSET = new THREE.Vector3(400, 300, 400);
 
 document.body.style.cursor = "grab";
 
@@ -79,22 +80,111 @@ createSphericalGrid(radius, gridDivisions);
 ////////////////////////////////////////////////
 ///////////////////// Lights ///////////////////
 ////////////////////////////////////////////////
-const directionalLight = new THREE.DirectionalLight(0xfabe57, 4);
-directionalLight.position.set(800, 500, 300); // Position the light
+
+
+const directionalLight = new THREE.DirectionalLight(0xf5d1ab, 4);
+directionalLight.position.set(500, 500, 300); // Position the light
 directionalLight.castShadow = true; // Enable shadows
 directionalLight.shadow.camera.near = 0.5; // Shadow camera near plane
-directionalLight.shadow.camera.far = 10000; // Shadow camera far plane
-directionalLight.shadow.camera.left = -4000; // Set shadow camera left
-directionalLight.shadow.camera.right = 4000; // Set shadow camera right
-directionalLight.shadow.camera.top = 4000; // Set shadow camera top
-directionalLight.shadow.camera.bottom = -4000; // Set shadow camera bottom
-
+directionalLight.shadow.camera.far = 5000; // Shadow camera far plane
+directionalLight.shadow.camera.left = -500; // Set shadow camera left
+directionalLight.shadow.camera.right = 500; // Set shadow camera right
+directionalLight.shadow.camera.top = 500; // Set shadow camera top
+directionalLight.shadow.camera.bottom = -500; // Set shadow camera bottom
 scene.add(directionalLight);
 
 // Add an ambient light for base illumination
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // Soft white light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
 scene.add(ambientLight);
+function createRectAreaLight(
+  color,
+  intensity,
+  width,
+  height,
+  targetPosition,
+  yOffset = 30
+) {
+  const rectLight = new THREE.RectAreaLight(color, intensity, width, height);
+  rectLight.position.set(
+    targetPosition.x,
+    targetPosition.y + yOffset,
+    targetPosition.z
+  );
+  rectLight.lookAt(targetPosition);
+  scene.add(rectLight);
+  return rectLight;
+}
 
+// Define lights with their specific configurations
+const lightConfigs = [
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 100,
+    height: 50,
+    targetPosition: new THREE.Vector3(40, 20, 270),
+  },
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 98,
+    height: 50,
+    targetPosition: new THREE.Vector3(50, 65, 165),
+  },
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 100,
+    height: 50,
+    targetPosition: new THREE.Vector3(50, 10, 0),
+  },
+  {
+    color: 0xffffff,
+    intensity: 2,
+    width: 100,
+    height: 50,
+    targetPosition: new THREE.Vector3(240, 10, -60),
+  },
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 80,
+    height: 50,
+    targetPosition: new THREE.Vector3(300, 85, -130),
+  },
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 100,
+    height: 50,
+    targetPosition: new THREE.Vector3(500, 85, -60),
+  },
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 100,
+    height: 50,
+    targetPosition: new THREE.Vector3(430, 85, -60),
+  },
+  {
+    color: 0xffffff,
+    intensity: 4,
+    width: 80,
+    height: 70,
+    targetPosition: new THREE.Vector3(420, 0, 100),
+  },
+];
+
+// Create lights using the reusable function
+lightConfigs.forEach((config) => {
+  createRectAreaLight(
+    config.color,
+    config.intensity,
+    config.width,
+    config.height,
+    config.targetPosition
+  );
+});
 ////////////////////////////////////////////////
 /////////////////// Game ///////////////////////
 ////////////////////////////////////////////////
@@ -102,31 +192,43 @@ scene.add(ambientLight);
 // Store reference to the player character
 let playerCharacter;
 const sharedState = { mixer: null };
-let currentScene;
+let currentScene = scene;
+let mainScene = scene;
 
 const clock = new THREE.Clock();
 function setup() {
   playerCharacter = initGame(sharedState); // Adjusted to return the player character
-  animate();
-  console.log("setup", playerCharacter);
 }
 
 setup();
-
+let result;
 // Animation loop
 export function animate() {
   requestAnimationFrame(animate);
   // Update camera position smoothly
-  let result = updateGame();
-  playerCharacter = result.character;
-  currentScene = result.currentScene;
-  const delta = clock.getDelta(); // Time since the last frame
-
-  if (sharedState.mixer) sharedState.mixer.update(delta);
-  renderer.render(currentScene, result.camera);
+  
+  if (currentScene === scene) {
+    result = updateGame();
+    playerCharacter = result.character;
+    currentScene = result.currentScene;
+    const delta = clock.getDelta(); // Time since the last frame
+    renderer.render(currentScene, result.camera);
+    if (sharedState.mixer) sharedState.mixer.update(delta);
+  } else {
+    result = updateInfoGame();
+    renderer.render(currentScene, result.camera);
+  }
 }
 
 animate();
+
+resetButton.addEventListener("click", (e) => {
+  currentScene = mainScene;
+});
+
+document.getElementById("back_button").addEventListener("click", () => {
+  currentScene = mainScene;
+});
 
 ////////////////////////////////////////////////
 /////////////// Window Changes /////////////////

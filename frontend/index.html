@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -10,8 +10,34 @@
       href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&family=Domine:wght@400..700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
       rel="stylesheet"
     />
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #fad998;
+        user-select: none;
+      }
 
-    <title>Roger's Porfolio</title>
+      .loading {
+        color: white;
+        display: flex;
+        flex-direction: column;
+        background-color: #fad998;
+        font-family: "Pixelify Sans", serif;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        text-align: center;
+      }
+    </style>
+    <title>Roger's Portfolio</title>
   </head>
   <body>
     <div class="menu">
@@ -41,6 +67,29 @@
       <button type="button" id="helpButton" class="button1">?</button>
       <button type="button" id="resetButton" class="button1">Reset</button>
     </div>
+
+    <div id="entrance_popup_container" style="display: none;">
+      <p class="optionText" id="twoOptions">Where would you like to go?</p>
+      <p class="optionText" id="oneOption">Go in?</p>
+      <div id="enter_buttons_container">
+        <button class="enter_button" id="projects_button">
+          Enter Projects
+        </button>
+        <button class="enter_button" id="aboutme_button">
+          Enter About Me
+        </button>
+        <button class="enter_button" id="experience_button">
+          Enter Experience
+        </button>
+        <button class="enter_button" id="skills_button">
+          Enter Skills
+        </button>
+        <button class="enter_button" id="shop_button">
+          Enter Shop
+        </button>
+      </div>
+    </div>
+    <button class="button1" id="back_button">Back</button>
     <canvas id="gameCanvas"></canvas>
     <script type="module" src="/src/main.js"></script>
   </body>

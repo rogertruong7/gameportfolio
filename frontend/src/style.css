@@ -3,9 +3,11 @@ body {
   padding: 0;
   background-color: #fad998;
   user-select: none;
+  font-family: "Pixelify Sans", serif;
 }
 
 canvas {
+  font-family: "Pixelify Sans", serif;
   position: fixed;
   margin: 0;
   top: 0;
@@ -15,6 +17,7 @@ canvas {
 }
 
 .menu {
+  
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -25,6 +28,7 @@ canvas {
 }
 
 .button1 {
+  font-family: "Pixelify Sans", serif;
   background-color: white;
   border: none;
   border-radius: 20px;
@@ -42,7 +46,7 @@ canvas {
 }
 
 .popup {
-  font-family: "Roboto", serif;
+  font-family: "Pixelify Sans", serif;
   position: fixed;
   top: 0;
   left: 0;
@@ -68,22 +72,6 @@ canvas {
   padding: 10px 20px;
   cursor: pointer;
   z-index: 101;
-}
-
-.loading {
-  display: flex;
-  flex-direction: column;
-  background-color: #fad998;
-  font-family: "Roboto", serif;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  text-align: center;
 }
 
 .loading-bar {
@@ -130,3 +118,72 @@ canvas {
   right: 20px;
   z-index: 102;
 }
+
+#entrance_popup_container {
+  font-size: 28px;
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 30px;
+  padding-bottom: 50px;
+  margin: auto;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  height: 120px;
+  z-index: 103;
+  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border: 4px dashed white;
+}
+
+#entrance_popup_container p {
+  margin-top: 10px;
+  color: white;
+}
+
+#enter_buttons_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.optionText {
+  display: none;
+}
+
+.enter_button {
+  border: 4px dashed white;
+  display: none;
+  width: 45%;
+  text-align: center;
+  font-family: "Pixelify Sans", serif;
+  z-index: 102;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-radius: 20px;
+  padding: 10px 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.enter_button:hover {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+#back_button {
+  position: absolute;
+  top: 20px;
+  left: 100px;
+  z-index: 103;
+}
+
