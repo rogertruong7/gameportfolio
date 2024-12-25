@@ -20,7 +20,7 @@ let mainScene;
 let darkSpot;
 let startPosition = [176, -20, 126];
 let currentScene;
-
+// hello
 let doorways = {};
 const camera = new THREE.PerspectiveCamera(
   60,
