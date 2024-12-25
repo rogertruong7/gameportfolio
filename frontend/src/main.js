@@ -21,7 +21,7 @@ document.body.style.cursor = "grab";
 
 // Create a spherical grid
 const radius = 2000; // Radius of the sphere
-const gridDivisions = 50; // Number of grid lines (can adjust for more or less)
+const gridDivisions = 36; // Number of grid lines (can adjust for more or less)
 
 function createSphericalGrid(radius, divisions) {
   const gridMaterial = new THREE.LineBasicMaterial({

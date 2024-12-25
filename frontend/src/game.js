@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { CAMERA_OFFSET } from "./main";
 import { scene, renderer } from "./main";
+import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import { initProjectsGame } from "./projects";
 
@@ -20,7 +21,7 @@ let mainScene;
 let darkSpot;
 let startPosition = [176, -20, 126];
 let currentScene;
-// hello
+let texts = [];
 let doorways = {};
 const camera = new THREE.PerspectiveCamera(
   60,
@@ -64,7 +65,7 @@ export function initGame(sharedState) {
   createDoorways();
   // Game floor
   loader.load(
-    "assets/floor.glb",
+    "models/floor.glb",
     function (gltf) {
       floor = gltf.scene;
       floor.position.set(-70, 0, 450);
@@ -88,6 +89,13 @@ export function initGame(sharedState) {
     }
   );
 
+  const fontPath = "fonts/PixelifySans_Regular.json";
+  createText(scene, "PROJECTS", new THREE.Vector3(20, 100, 20), fontPath);
+  createText(scene, "ABOUT ME", new THREE.Vector3(60, 100, 60), fontPath);
+  createText(scene, "EXPERIENCE", new THREE.Vector3(100, 100, 100), fontPath);
+  createText(scene, "SKILLS", new THREE.Vector3(140, 100, 140), fontPath);
+  createText(scene, "SHOP", new THREE.Vector3(180, 100, 180), fontPath);
+
   targetPosition = new THREE.Vector3(0, 20, 0);
   // Add mouse and keyboard controls
   document.addEventListener("keydown", (event) => onKeyDown(event, scene));
@@ -99,7 +107,7 @@ export function initGame(sharedState) {
   character = new THREE.Mesh(charGeometry, charMaterial);
 
   loader.load(
-    "assets/cloud/cloudme.glb",
+    "models/cloud/cloudme.glb",
     function (gltf) {
       character = gltf.scene;
       character.position.set(...startPosition);
@@ -144,7 +152,7 @@ export function initGame(sharedState) {
 
 function createDetails(scene) {
   loader.load(
-    "assets/cherryTree1.glb",
+    "models/cherryTree1.glb",
     function (gltf) {
       let tree1 = gltf.scene;
       tree1.position.set(50, -19, -90);
@@ -174,7 +182,7 @@ function createDetails(scene) {
 // Create buildings and doors
 function createBuildings(scene) {
   loader.load(
-    "assets/buildingsSmall.glb",
+    "models/buildingsSmall.glb",
     function (gltf) {
       buildings = gltf.scene;
       buildings.position.set(-70, 0, 450);
@@ -201,6 +209,29 @@ function createBuildings(scene) {
     }
   );
 }
+
+
+
+function createText(scene, text, position, fontPath) {
+  const loader = new FontLoader();
+  loader.load(fontPath, (font) => {
+    const textGeometry = new TextGeometry(text, {
+      font: font,
+      size: 24,
+      height: 10,
+    });
+
+    const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+    textMesh.position.set(position.x, position.y, position.z);
+    texts.push(textMesh);
+    scene.add(textMesh);
+  });
+}
+
+// Example usage
+
 
 //////////////////////////////////////////////////////////////////
 //////////// Changing Scenes ////////////////////////////////////
