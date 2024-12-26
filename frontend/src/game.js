@@ -30,7 +30,7 @@ const camera = new THREE.PerspectiveCamera(
   5000
 );
 
-const loader = new GLTFLoader();
+
 
 export function updateGame() {
   mainScene = scene;
@@ -70,6 +70,7 @@ export function initGame(sharedState) {
   createDetails(scene);
   createDoorways();
   // Game floor
+  const loader = new GLTFLoader();
   loader.load(
     "models/floor.glb",
     function (gltf) {
@@ -164,6 +165,7 @@ export function initGame(sharedState) {
 }
 
 function createDetails(scene) {
+  const loader = new GLTFLoader();
   loader.load(
     "models/cherryTree1.glb",
     function (gltf) {
@@ -194,6 +196,7 @@ function createDetails(scene) {
 
 // Create buildings and doors
 function createBuildings(scene) {
+  const loader = new GLTFLoader();
   loader.load(
     "models/buildingsSmall.glb",
     function (gltf) {
