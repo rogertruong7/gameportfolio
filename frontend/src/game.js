@@ -120,7 +120,7 @@ export function initGame(sharedState) {
   character = new THREE.Mesh(charGeometry, charMaterial);
   
   loader.load(
-    "models/cloud/cloudme.glb",
+    "models/cloudme.glb",
     function (gltf) {
       character = gltf.scene;
       character.position.set(...startPosition);
