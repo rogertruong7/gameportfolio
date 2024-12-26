@@ -212,7 +212,7 @@ function createBuildings(scene) {
     function (xhr) {
       //While it is loading, log the progress
       console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-      if ((xhr.loaded / xhr.total) * 100 === 100) {
+      if ((xhr.loaded / xhr.total) * 100 >= 100) {
         loading = false;
       }
     },
