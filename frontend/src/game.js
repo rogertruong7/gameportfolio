@@ -73,6 +73,7 @@ export function initGame(sharedState) {
   loader.load(
     "models/floor.glb",
     function (gltf) {
+      console.log("hello?");
       floor = gltf.scene;
       floor.position.set(-70, 0, 450);
       floor.traverse((node) => {
