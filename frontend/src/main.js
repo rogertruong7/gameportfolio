@@ -1,4 +1,4 @@
-import "./style.css";
+import "../public/style.css";
 import * as THREE from "three";
 import { initGame, updateGame } from "./game.js";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/Addons.js";

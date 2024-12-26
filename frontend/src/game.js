@@ -229,7 +229,7 @@ function createText(scene, text, position, fontPath, fontSize) {
     const textGeometry = new TextGeometry(text, {
       font: font,
       size: fontSize,
-      height: 10,
+      depth: 10,
     });
     textGeometry.computeBoundingBox();
     const boundingBox = textGeometry.boundingBox;
