@@ -6,6 +6,7 @@ import { scene, renderer } from "./main";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import { initProjectsGame } from "./projects";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 
 const SPEED = 2; // Movement SPEED
 const CAMERA_ROTATION_SPEED = 0.0015;
@@ -75,6 +76,7 @@ export function initGame(sharedState) {
   createDoorways();
   // Game floor
   const loader = new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
   loader.load(
     "models/floor.glb",
     function (gltf) {
@@ -123,7 +125,7 @@ export function initGame(sharedState) {
   const charMaterial = new THREE.MeshPhongMaterial({ color: 0xffd700 });
   const charGeometry = new THREE.BoxGeometry(20, 40, 80);
   character = new THREE.Mesh(charGeometry, charMaterial);
-
+  
   loader.load(
     "models/cloud/cloudme.glb",
     function (gltf) {
@@ -172,6 +174,7 @@ export function initGame(sharedState) {
 
 function createDetails(scene) {
   const loader = new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
   loader.load(
     "models/cherryTree1.glb",
     function (gltf) {
@@ -203,10 +206,8 @@ function createDetails(scene) {
 // Create buildings and doors
 function createBuildings(scene) {
   const loader1 = new GLTFLoader();
-  const loader2 = new GLTFLoader();
-  const loader3 = new GLTFLoader();
-  
 
+  loader1.setMeshoptDecoder(MeshoptDecoder);
   loader1.load(
     "models/leftBuildings.glb",
     function (gltf) {
@@ -232,7 +233,7 @@ function createBuildings(scene) {
       console.error(error);
     }
   );
-  loader2.load(
+  loader1.load(
     "models/rightBuildings.glb",
     function (gltf) {
       rightBuildings = gltf.scene;
@@ -256,7 +257,7 @@ function createBuildings(scene) {
       console.error(error);
     }
   );
-  loader3.load(
+  loader1.load(
     "models/teaShop.glb",
     function (gltf) {
       shop = gltf.scene;
