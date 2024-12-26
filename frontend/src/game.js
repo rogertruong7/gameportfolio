@@ -214,7 +214,7 @@ function createBuildings(scene) {
           node.receiveShadow = true;
         }
       });
-      leftBuildings.scale.set(0.8, 0.8, 0.8);
+      leftBuildings.scale.set(0.3, 0.3, 0.3);
       leftBuildings.name = "leftBuildings";
       scene.add(leftBuildings);
     },
@@ -238,7 +238,7 @@ function createBuildings(scene) {
           node.receiveShadow = true;
         }
       });
-      rightBuildings.scale.set(0.8, 0.8, 0.8);
+      rightBuildings.scale.set(0.3, 0.3, 0.3);
       rightBuildings.name = "rightBuildings";
       scene.add(rightBuildings);
     },
@@ -262,7 +262,7 @@ function createBuildings(scene) {
           node.receiveShadow = true;
         }
       });
-      shop.scale.set(0.8, 0.8, 0.8);
+      shop.scale.set(0.3, 0.3, 0.3);
       shop.name = "shop";
       scene.add(shop);
     },
