@@ -246,7 +246,7 @@ function createBuildings(scene) {
     }
   );
   loader.load(
-    "models/teaShop.glb",
+    "models/teaShopNew.glb",
     function (gltf) {
       shop = gltf.scene;
       shop.position.set(0, 0, 0);
