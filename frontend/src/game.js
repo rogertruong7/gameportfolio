@@ -16,7 +16,7 @@ let character,
   clickMoving = false;
 let leftBuildings;
 let rightBuildings;
-let shop;
+// let shop;
 let keys = {}; // Track active keys
 let floor;
 let loading = false;
@@ -107,7 +107,7 @@ export function initGame(sharedState) {
   createText(scene, "about me", new THREE.Vector3(38, 70, -164), fontPath, 10);
   createText(scene, "experiences", new THREE.Vector3(92, 75, -210), fontPath, 8);
   createText(scene, "skills", new THREE.Vector3(170, 75, -210), fontPath, 10);
-  createText(scene, "shop", new THREE.Vector3(186, 50, -130), fontPath, 10);
+  // createText(scene, "shop", new THREE.Vector3(186, 50, -130), fontPath, 10);
 
   targetPosition = new THREE.Vector3(0, 20, 0);
   // Add mouse and keyboard controls
@@ -311,14 +311,14 @@ function createDoorways() {
   const experienceMax = new THREE.Vector3(292, 50, 20);
   const skillsMin = new THREE.Vector3(365, -50, -60);
   const skillsMax = new THREE.Vector3(504, 50, 20);
-  const shopMin = new THREE.Vector3(365, -50, -60);
-  const shopMax = new THREE.Vector3(504, 50, 20);
+  // const shopMin = new THREE.Vector3(365, -50, -60);
+  // const shopMax = new THREE.Vector3(504, 50, 20);
 
   doorways.projects = new THREE.Box3(projectsDoorMin, projectsDoorMax);
   doorways.aboutMe = new THREE.Box3(aboutMeMin, aboutMeMax);
   doorways.experience = new THREE.Box3(experienceMin, experienceMax);
   doorways.skills = new THREE.Box3(skillsMin, skillsMax);
-  doorways.shop = new THREE.Box3(shopMin, shopMax);
+  // doorways.shop = new THREE.Box3(shopMin, shopMax);
 
   // Object.entries(doorways).forEach(([showcase, box]) => {
   //   scene.add(new THREE.Box3Helper(box, 0xff0000));
@@ -371,9 +371,9 @@ function turnOptionsOn(showcases, length) {
       case "skills":
         document.getElementById("skills_button").style.display = "flex";
         break;
-      case "shop":
-        document.getElementById("shop_button").style.display = "flex";
-        break;
+      // case "shop":
+      //   document.getElementById("shop_button").style.display = "flex";
+      //   break;
     }
   });
 }
@@ -431,11 +431,11 @@ document.getElementById("skills_button").addEventListener("click", function () {
   currentScene = initProjectsGame();
 });
 
-document.getElementById("shop_button").addEventListener("click", function () {
-  // Code to run when the "Enter Shop" button is clicked
-  moveScene();
-  currentScene = initProjectsGame();
-});
+// document.getElementById("shop_button").addEventListener("click", function () {
+//   // Code to run when the "Enter Shop" button is clicked
+//   moveScene();
+//   currentScene = initProjectsGame();
+// });
 
 //////////////////////////////////////////////////////////////////
 //////////////// Mouse Activities //////////////////////////////////
