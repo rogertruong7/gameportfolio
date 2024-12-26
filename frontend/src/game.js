@@ -18,7 +18,7 @@ let rightBuildings;
 let shop;
 let keys = {}; // Track active keys
 let floor;
-let loading = true;
+let loading = false;
 let mainScene;
 let darkSpot;
 let startPosition = [176, -20, 126];
@@ -225,9 +225,7 @@ function createBuildings(scene) {
     function (xhr) {
       //While it is loading, log the progress
       console.log((xhr.loaded / xhr.total) * 100 + "% loaded leftBuildings");
-      if ((xhr.loaded / xhr.total) * 100 >= 100) {
-        
-      }
+    
     },
     function (error) {
       console.log("bye");
@@ -252,10 +250,6 @@ function createBuildings(scene) {
     function (xhr) {
       //While it is loading, log the progress
       console.log((xhr.loaded / xhr.total) * 100 + "% loaded rightBuildings");
-      if ((xhr.loaded / xhr.total) * 100 >= 100) {
-        console.log("loading is false");
-        loading = false;
-      }
     },
     function (error) {
       console.log("bye");
