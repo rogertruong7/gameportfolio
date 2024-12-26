@@ -103,17 +103,11 @@ export function initGame(sharedState) {
   );
 
   const fontPath = "fonts/PixelifySans_Regular.json";
-  createText(scene, "projects", new THREE.Vector3(25, 220, 250), fontPath, 24);
-  createText(scene, "about me", new THREE.Vector3(25, 180, 20), fontPath, 24);
-  createText(
-    scene,
-    "experiences",
-    new THREE.Vector3(190, 180, -100),
-    fontPath,
-    20
-  );
-  createText(scene, "skills", new THREE.Vector3(400, 200, -100), fontPath, 24);
-  createText(scene, "shop", new THREE.Vector3(430, 140, 110), fontPath, 24);
+  createText(scene, "projects", new THREE.Vector3(38, 90, -90), fontPath, 10);
+  createText(scene, "about me", new THREE.Vector3(38, 70, -164), fontPath, 10);
+  createText(scene, "experiences", new THREE.Vector3(92, 75, -210), fontPath, 8);
+  createText(scene, "skills", new THREE.Vector3(170, 75, -210), fontPath, 10);
+  createText(scene, "shop", new THREE.Vector3(186, 50, -130), fontPath, 10);
 
   targetPosition = new THREE.Vector3(0, 20, 0);
   // Add mouse and keyboard controls
@@ -183,7 +177,7 @@ function createDetails(scene) {
           node.receiveShadow = true;
         }
       });
-      tree1.scale.set(8, 8, 8);
+      tree1.scale.set(9, 5, 9);
 
       tree1.name = "tree1";
 
@@ -285,7 +279,7 @@ function createText(scene, text, position, fontPath, fontSize) {
     const textGeometry = new TextGeometry(text, {
       font: font,
       size: fontSize,
-      depth: 10,
+      depth: 5,
     });
     textGeometry.computeBoundingBox();
     const boundingBox = textGeometry.boundingBox;
@@ -327,9 +321,9 @@ function createDoorways() {
   doorways.skills = new THREE.Box3(skillsMin, skillsMax);
   doorways.shop = new THREE.Box3(shopMin, shopMax);
 
-  Object.entries(doorways).forEach(([showcase, box]) => {
-    scene.add(new THREE.Box3Helper(box, 0xff0000));
-  });
+  // Object.entries(doorways).forEach(([showcase, box]) => {
+  //   scene.add(new THREE.Box3Helper(box, 0xff0000));
+  // });
 }
 
 export function resetPopupText() {
