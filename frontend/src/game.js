@@ -198,7 +198,7 @@ function createDetails(scene) {
 function createBuildings(scene) {
   loader.setMeshoptDecoder(MeshoptDecoder);
   loader.load(
-    "models/leftBuildings3.glb",
+    "models/leftBuildingsNew.glb",
     function (gltf) {
       leftBuildings = gltf.scene;
       leftBuildings.position.set(0, 0, 0);
@@ -479,7 +479,7 @@ function onMouseClick(event) {
 }
 
 function createDarkSpot(position) {
-  const darkSpotGeometry = new THREE.CircleGeometry(10, 6); // Radius and segments
+  const darkSpotGeometry = new THREE.CircleGeometry(5, 6); // Radius and segments
   const darkSpotMaterial = new THREE.MeshBasicMaterial({
     color: 0x000000,
     opacity: 0.5,
