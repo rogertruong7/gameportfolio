@@ -198,7 +198,7 @@ function createDetails(scene) {
 function createBuildings(scene) {
   loader.setMeshoptDecoder(MeshoptDecoder);
   loader.load(
-    "models/leftBuildingsNew.glb",
+    "models/leftBuildingsNew1.glb",
     function (gltf) {
       leftBuildings = gltf.scene;
       leftBuildings.position.set(0, 0, 0);
@@ -222,7 +222,7 @@ function createBuildings(scene) {
     }
   );
   loader.load(
-    "models/rightBuildingsNew.glb",
+    "models/rightBuildingsNew1.glb",
     function (gltf) {
       rightBuildings = gltf.scene;
       rightBuildings.position.set(0, 0, 0);
@@ -246,7 +246,7 @@ function createBuildings(scene) {
     }
   );
   loader.load(
-    "models/teaShopNew.glb",
+    "models/teaShopNew1.glb",
     function (gltf) {
       shop = gltf.scene;
       shop.position.set(0, 0, 0);
