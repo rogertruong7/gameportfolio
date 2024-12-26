@@ -222,7 +222,7 @@ function createBuildings(scene) {
     }
   );
   loader.load(
-    "models/rightBuildings6.glb",
+    "models/rightBuildingsNew.glb",
     function (gltf) {
       rightBuildings = gltf.scene;
       rightBuildings.position.set(0, 0, 0);
