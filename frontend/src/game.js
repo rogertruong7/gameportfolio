@@ -13,7 +13,9 @@ const CAMERA_ROTATION_SPEED = 0.0015;
 let character,
   targetPosition,
   clickMoving = false;
-let buildings;
+let leftBuildings;
+let rightBuildings;
+let shop;
 let keys = {}; // Track active keys
 let floor;
 let loading = true;
@@ -44,7 +46,9 @@ export function updateGame() {
   if (currentScene === mainScene) {
     if (
       !loading &&
-      scene.getObjectByName("buildings") &&
+      scene.getObjectByName("rightBuildings") &&
+      scene.getObjectByName("leftBuildings") &&
+      scene.getObjectByName("shop") &&
       scene.getObjectByName("floor")
     ) {
       appearingItemsAfterLoad();
@@ -198,26 +202,58 @@ function createDetails(scene) {
 
 // Create buildings and doors
 function createBuildings(scene) {
-  const loader = new GLTFLoader();
-  loader.load(
-    "models/buildingsSmall.glb",
+  const loader1 = new GLTFLoader();
+  const loader2 = new GLTFLoader();
+  const loader3 = new GLTFLoader();
+  
+
+  loader1.load(
+    "models/leftBuildings.glb",
     function (gltf) {
-      buildings = gltf.scene;
-      buildings.position.set(-70, 0, 450);
-      buildings.traverse((node) => {
+      leftBuildings = gltf.scene;
+      leftBuildings.position.set(-70, 0, 450);
+      leftBuildings.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = true;
           node.receiveShadow = true;
         }
       });
-      buildings.scale.set(0.8, 0.8, 0.8);
-      buildings.name = "buildings";
-      scene.add(buildings);
+      leftBuildings.scale.set(0.8, 0.8, 0.8);
+      leftBuildings.name = "leftBuildings";
+      scene.add(leftBuildings);
     },
     function (xhr) {
       //While it is loading, log the progress
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded building");
+      console.log((xhr.loaded / xhr.total) * 100 + "% loaded leftBuildings");
       if ((xhr.loaded / xhr.total) * 100 >= 100) {
+        
+      }
+    },
+    function (error) {
+      console.log("bye");
+      console.error(error);
+    }
+  );
+  loader2.load(
+    "models/rightBuildings.glb",
+    function (gltf) {
+      rightBuildings = gltf.scene;
+      rightBuildings.position.set(-70, 0, 450);
+      rightBuildings.traverse((node) => {
+        if (node.isMesh) {
+          node.castShadow = true;
+          node.receiveShadow = true;
+        }
+      });
+      rightBuildings.scale.set(0.8, 0.8, 0.8);
+      rightBuildings.name = "rightBuildings";
+      scene.add(rightBuildings);
+    },
+    function (xhr) {
+      //While it is loading, log the progress
+      console.log((xhr.loaded / xhr.total) * 100 + "% loaded rightBuildings");
+      if ((xhr.loaded / xhr.total) * 100 >= 100) {
+        console.log("loading is false");
         loading = false;
       }
     },
@@ -226,7 +262,33 @@ function createBuildings(scene) {
       console.error(error);
     }
   );
+  loader3.load(
+    "models/teaShop.glb",
+    function (gltf) {
+      shop = gltf.scene;
+      shop.position.set(-70, 0, 450);
+      shop.traverse((node) => {
+        if (node.isMesh) {
+          node.castShadow = true;
+          node.receiveShadow = true;
+        }
+      });
+      shop.scale.set(0.8, 0.8, 0.8);
+      shop.name = "shop";
+      scene.add(shop);
+    },
+    function (xhr) {
+      //While it is loading, log the progress
+      console.log((xhr.loaded / xhr.total) * 100 + "% loaded shop");
+    },
+    function (error) {
+      console.log("bye");
+      console.error(error);
+    }
+  );
+  
 }
+
 
 function createText(scene, text, position, fontPath, fontSize) {
   const loader = new FontLoader();
