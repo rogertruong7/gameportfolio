@@ -9,7 +9,7 @@ import { updateInfoGame } from "./projects.js";
 const canvas = document.querySelector("#gameCanvas");
 export const renderer = new THREE.WebGLRenderer({ canvas });
 
-renderer.setClearColor(0xffc9c9, 1); // fad998
+renderer.setClearColor(0xfad998, 1); // fad998
 renderer.shadowMap.enabled = true; // Enable shadows
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Shadow quality
 renderer.setSize(window.innerWidth, window.innerHeight);

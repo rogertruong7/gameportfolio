@@ -32,7 +32,8 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   5000
 );
-
+const loader = new GLTFLoader();
+loader.setMeshoptDecoder(MeshoptDecoder);
 
 
 export function updateGame() {
@@ -75,8 +76,6 @@ export function initGame(sharedState) {
   createDetails(scene);
   createDoorways();
   // Game floor
-  const loader = new GLTFLoader();
-  loader.setMeshoptDecoder(MeshoptDecoder);
   loader.load(
     "models/floor.glb",
     function (gltf) {
@@ -173,8 +172,6 @@ export function initGame(sharedState) {
 }
 
 function createDetails(scene) {
-  const loader = new GLTFLoader();
-  loader.setMeshoptDecoder(MeshoptDecoder);
   loader.load(
     "models/cherryTree1.glb",
     function (gltf) {
@@ -205,10 +202,8 @@ function createDetails(scene) {
 
 // Create buildings and doors
 function createBuildings(scene) {
-  const loader1 = new GLTFLoader();
-
-  loader1.setMeshoptDecoder(MeshoptDecoder);
-  loader1.load(
+  loader.setMeshoptDecoder(MeshoptDecoder);
+  loader.load(
     "models/leftBuildings.glb",
     function (gltf) {
       leftBuildings = gltf.scene;
@@ -226,14 +221,13 @@ function createBuildings(scene) {
     function (xhr) {
       //While it is loading, log the progress
       console.log((xhr.loaded / xhr.total) * 100 + "% loaded leftBuildings");
-    
     },
     function (error) {
       console.log("bye");
       console.error(error);
     }
   );
-  loader1.load(
+  loader.load(
     "models/rightBuildings.glb",
     function (gltf) {
       rightBuildings = gltf.scene;
@@ -257,7 +251,7 @@ function createBuildings(scene) {
       console.error(error);
     }
   );
-  loader1.load(
+  loader.load(
     "models/teaShop.glb",
     function (gltf) {
       shop = gltf.scene;
@@ -286,8 +280,8 @@ function createBuildings(scene) {
 
 
 function createText(scene, text, position, fontPath, fontSize) {
-  const loader = new FontLoader();
-  loader.load(fontPath, (font) => {
+  const fontLoader = new FontLoader();
+  fontLoader.load(fontPath, (font) => {
     const textGeometry = new TextGeometry(text, {
       font: font,
       size: fontSize,
