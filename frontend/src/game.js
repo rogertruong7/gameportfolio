@@ -196,31 +196,31 @@ function createDetails(scene) {
 
 // Create buildings and doors
 function createBuildings(scene) {
-  // loader.setMeshoptDecoder(MeshoptDecoder);
-  // loader.load(
-  //   "models/leftBuildingsNew1.glb",
-  //   function (gltf) {
-  //     leftBuildings = gltf.scene;
-  //     leftBuildings.position.set(0, 0, 0);
-  //     leftBuildings.traverse((node) => {
-  //       if (node.isMesh) {
-  //         node.castShadow = true;
-  //         node.receiveShadow = true;
-  //       }
-  //     });
-  //     leftBuildings.scale.set(0.3, 0.3, 0.3);
-  //     leftBuildings.name = "leftBuildings";
-  //     scene.add(leftBuildings);
-  //   },
-  //   function (xhr) {
-  //     //While it is loading, log the progress
-  //     console.log((xhr.loaded / xhr.total) * 100 + "% loaded leftBuildings");
-  //   },
-  //   function (error) {
-  //     console.log("bye");
-  //     console.error(error);
-  //   }
-  // );
+  loader.setMeshoptDecoder(MeshoptDecoder);
+  loader.load(
+    "models/leftBuildingsNew1.glb",
+    function (gltf) {
+      leftBuildings = gltf.scene;
+      leftBuildings.position.set(0, 0, 0);
+      leftBuildings.traverse((node) => {
+        if (node.isMesh) {
+          node.castShadow = true;
+          node.receiveShadow = true;
+        }
+      });
+      leftBuildings.scale.set(0.3, 0.3, 0.3);
+      leftBuildings.name = "leftBuildings";
+      scene.add(leftBuildings);
+    },
+    function (xhr) {
+      //While it is loading, log the progress
+      console.log((xhr.loaded / xhr.total) * 100 + "% loaded leftBuildings");
+    },
+    function (error) {
+      console.log("bye");
+      console.error(error);
+    }
+  );
   // loader.load(
   //   "models/rightBuildingsNew1.glb",
   //   function (gltf) {
