@@ -81,9 +81,110 @@ createSphericalGrid(radius, gridDivisions);
 ///////////////////// Lights ///////////////////
 ////////////////////////////////////////////////
 
+const directionalLight = new THREE.DirectionalLight(0xf5d1ab, 2);
+directionalLight.position.set(500, 500, 300); // Position the light
+directionalLight.castShadow = true; // Enable shadows
+directionalLight.shadow.camera.near = 0.5; // Shadow camera near plane
+directionalLight.shadow.camera.far = 5000; // Shadow camera far plane
+directionalLight.shadow.camera.left = -500; // Set shadow camera left
+directionalLight.shadow.camera.right = 500; // Set shadow camera right
+directionalLight.shadow.camera.top = 500; // Set shadow camera top
+directionalLight.shadow.camera.bottom = -500; // Set shadow camera bottom
+scene.add(directionalLight);
+
 // Add an ambient light for base illumination
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
 scene.add(ambientLight);
+
+function createRectAreaLight(
+  color,
+  intensity,
+  width,
+  height,
+  targetPosition,
+  yOffset = 30
+) {
+  const rectLight = new THREE.RectAreaLight(color, intensity, width, height);
+  rectLight.position.set(
+    targetPosition.x,
+    targetPosition.y + yOffset,
+    targetPosition.z
+  );
+  rectLight.lookAt(targetPosition);
+  scene.add(rectLight);
+  return rectLight;
+}
+
+// Define lights with their specific configurations
+const lightConfigs = [
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 100,
+    height: 50,
+    targetPosition: new THREE.Vector3(40, 20, 270),
+  },
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 98,
+    height: 50,
+    targetPosition: new THREE.Vector3(50, 65, 165),
+  },
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 100,
+    height: 50,
+    targetPosition: new THREE.Vector3(50, 10, 0),
+  },
+  {
+    color: 0xffffff,
+    intensity: 2,
+    width: 100,
+    height: 50,
+    targetPosition: new THREE.Vector3(240, 10, -60),
+  },
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 80,
+    height: 50,
+    targetPosition: new THREE.Vector3(300, 85, -130),
+  },
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 100,
+    height: 50,
+    targetPosition: new THREE.Vector3(500, 85, -60),
+  },
+  {
+    color: 0xffffff,
+    intensity: 5,
+    width: 100,
+    height: 50,
+    targetPosition: new THREE.Vector3(430, 85, -60),
+  },
+  {
+    color: 0xffffff,
+    intensity: 4,
+    width: 80,
+    height: 70,
+    targetPosition: new THREE.Vector3(420, 0, 100),
+  },
+];
+
+// Create lights using the reusable function
+lightConfigs.forEach((config) => {
+  createRectAreaLight(
+    config.color,
+    config.intensity,
+    config.width,
+    config.height,
+    config.targetPosition
+  );
+});
 
 ////////////////////////////////////////////////
 /////////////////// Game ///////////////////////
