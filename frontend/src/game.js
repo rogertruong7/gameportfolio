@@ -7,6 +7,7 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import { initProjectsGame } from "./projects";
 
+
 const SPEED = 2; // Movement SPEED
 const CAMERA_ROTATION_SPEED = 0.0015;
 
@@ -71,7 +72,7 @@ export function initGame(sharedState) {
   createDoorways();
   // Game floor
   loader.load(
-    "models/floor.glb",
+    "public/models/floor.glb",
     function (gltf) {
       floor = gltf.scene;
       floor.position.set(-70, 0, 450);
@@ -95,7 +96,7 @@ export function initGame(sharedState) {
     }
   );
 
-  const fontPath = "fonts/PixelifySans_Regular.json";
+  const fontPath = "public/fonts/PixelifySans_Regular.json";
   createText(scene, "projects", new THREE.Vector3(25, 220, 250), fontPath, 24);
   createText(scene, "about me", new THREE.Vector3(25, 180, 20), fontPath, 24);
   createText(
@@ -119,7 +120,7 @@ export function initGame(sharedState) {
   character = new THREE.Mesh(charGeometry, charMaterial);
 
   loader.load(
-    "models/cloud/cloudme.glb",
+    "public/models/cloud/cloudme.glb",
     function (gltf) {
       character = gltf.scene;
       character.position.set(...startPosition);
@@ -164,7 +165,7 @@ export function initGame(sharedState) {
 
 function createDetails(scene) {
   loader.load(
-    "models/cherryTree1.glb",
+    "public/models/cherryTree1.glb",
     function (gltf) {
       let tree1 = gltf.scene;
       tree1.position.set(50, -19, -90);
@@ -194,7 +195,7 @@ function createDetails(scene) {
 // Create buildings and doors
 function createBuildings(scene) {
   loader.load(
-    "models/buildingsSmall.glb",
+    "public/models/buildingsSmall.glb",
     function (gltf) {
       buildings = gltf.scene;
       buildings.position.set(-70, 0, 450);
