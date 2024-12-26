@@ -92,14 +92,14 @@ document.body.style.cursor = "grab";
 ////////////////////////////////////////////////
 
 const directionalLight = new THREE.DirectionalLight(0xf5d1ab, 2);
-directionalLight.position.set(500, 500, 300); // Position the light
+directionalLight.position.set(300, 300, 300); // Position the light
 directionalLight.castShadow = true; // Enable shadows
 directionalLight.shadow.camera.near = 0.5; // Shadow camera near plane
-directionalLight.shadow.camera.far = 5000; // Shadow camera far plane
-directionalLight.shadow.camera.left = -500; // Set shadow camera left
-directionalLight.shadow.camera.right = 500; // Set shadow camera right
-directionalLight.shadow.camera.top = 500; // Set shadow camera top
-directionalLight.shadow.camera.bottom = -500; // Set shadow camera bottom
+directionalLight.shadow.camera.far = 1000; // Shadow camera far plane
+directionalLight.shadow.camera.left = -300; // Set shadow camera left
+directionalLight.shadow.camera.right = 300; // Set shadow camera right
+directionalLight.shadow.camera.top = 300; // Set shadow camera top
+directionalLight.shadow.camera.bottom = -300; // Set shadow camera bottom
 scene.add(directionalLight);
 
 // Add an ambient light for base illumination

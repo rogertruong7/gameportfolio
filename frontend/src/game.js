@@ -292,8 +292,7 @@ function createText(scene, text, position, fontPath, fontSize) {
     const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
     textMesh.position.set(position.x, position.y, position.z);
-    textMesh.castShadow = true;
-    textMesh.receiveShadow = true;
+
     texts.push(textMesh);
     scene.add(textMesh);
   });
