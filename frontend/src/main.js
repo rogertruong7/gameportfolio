@@ -81,8 +81,7 @@ createSphericalGrid(radius, gridDivisions);
 ///////////////////// Lights ///////////////////
 ////////////////////////////////////////////////
 
-
-const directionalLight = new THREE.DirectionalLight(0xf5d1ab, 4);
+const directionalLight = new THREE.DirectionalLight(0xf5d1ab, 2);
 directionalLight.position.set(500, 500, 300); // Position the light
 directionalLight.castShadow = true; // Enable shadows
 directionalLight.shadow.camera.near = 0.5; // Shadow camera near plane
@@ -96,6 +95,7 @@ scene.add(directionalLight);
 // Add an ambient light for base illumination
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
 scene.add(ambientLight);
+
 function createRectAreaLight(
   color,
   intensity,
@@ -185,6 +185,7 @@ lightConfigs.forEach((config) => {
     config.targetPosition
   );
 });
+
 ////////////////////////////////////////////////
 /////////////////// Game ///////////////////////
 ////////////////////////////////////////////////
@@ -206,7 +207,7 @@ let result;
 export function animate() {
   requestAnimationFrame(animate);
   // Update camera position smoothly
-  
+
   if (currentScene === scene) {
     result = updateGame();
     playerCharacter = result.character;

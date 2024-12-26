@@ -7,7 +7,7 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import { initProjectsGame } from "./projects";
 
-const SPEED = 1.8; // Movement SPEED
+const SPEED = 2; // Movement SPEED
 const CAMERA_ROTATION_SPEED = 0.0015;
 
 let character,
@@ -31,7 +31,6 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 const loader = new GLTFLoader();
-
 
 export function updateGame() {
   mainScene = scene;
@@ -72,7 +71,7 @@ export function initGame(sharedState) {
   createDoorways();
   // Game floor
   loader.load(
-    "models/floor.glb",
+    "public/models/floor.glb",
     function (gltf) {
       floor = gltf.scene;
       floor.position.set(-70, 0, 450);
@@ -96,10 +95,16 @@ export function initGame(sharedState) {
     }
   );
 
-  const fontPath = "fonts/PixelifySans_Regular.json";
+  const fontPath = "public/fonts/PixelifySans_Regular.json";
   createText(scene, "projects", new THREE.Vector3(25, 220, 250), fontPath, 24);
   createText(scene, "about me", new THREE.Vector3(25, 180, 20), fontPath, 24);
-  createText(scene, "experiences", new THREE.Vector3(190, 180, -100), fontPath, 20);
+  createText(
+    scene,
+    "experiences",
+    new THREE.Vector3(190, 180, -100),
+    fontPath,
+    20
+  );
   createText(scene, "skills", new THREE.Vector3(400, 200, -100), fontPath, 24);
   createText(scene, "shop", new THREE.Vector3(430, 140, 110), fontPath, 24);
 
@@ -114,7 +119,7 @@ export function initGame(sharedState) {
   character = new THREE.Mesh(charGeometry, charMaterial);
 
   loader.load(
-    "models/cloud/cloudme.glb",
+    "public/models/cloud/cloudme.glb",
     function (gltf) {
       character = gltf.scene;
       character.position.set(...startPosition);
@@ -159,7 +164,7 @@ export function initGame(sharedState) {
 
 function createDetails(scene) {
   loader.load(
-    "models/cherryTree1.glb",
+    "public/models/cherryTree1.glb",
     function (gltf) {
       let tree1 = gltf.scene;
       tree1.position.set(50, -19, -90);
@@ -189,7 +194,7 @@ function createDetails(scene) {
 // Create buildings and doors
 function createBuildings(scene) {
   loader.load(
-    "models/buildingsSmall.glb",
+    "public/models/buildingsSmall.glb",
     function (gltf) {
       buildings = gltf.scene;
       buildings.position.set(-70, 0, 450);
@@ -217,8 +222,6 @@ function createBuildings(scene) {
   );
 }
 
-
-
 function createText(scene, text, position, fontPath, fontSize) {
   const loader = new FontLoader();
   loader.load(fontPath, (font) => {
@@ -242,28 +245,24 @@ function createText(scene, text, position, fontPath, fontSize) {
     textMesh.receiveShadow = true;
     texts.push(textMesh);
     scene.add(textMesh);
-
   });
 }
-
-// Example usage
-
 
 //////////////////////////////////////////////////////////////////
 //////////// Changing Scenes ////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
 function createDoorways() {
-  const projectsDoorMin = new THREE.Vector3(129, -50, 142);
-  const projectsDoorMax = new THREE.Vector3(188, 50, 308);
+  const projectsDoorMin = new THREE.Vector3(105, -50, 132);
+  const projectsDoorMax = new THREE.Vector3(188, 50, 408);
   const aboutMeMin = new THREE.Vector3(105, -50, -46);
   const aboutMeMax = new THREE.Vector3(188, 50, 86);
   const experienceMin = new THREE.Vector3(117, -50, -60);
-  const experienceMax = new THREE.Vector3(292, 50, 25);
+  const experienceMax = new THREE.Vector3(292, 50, 20);
   const skillsMin = new THREE.Vector3(365, -50, -60);
-  const skillsMax = new THREE.Vector3(504, 50, 25);
+  const skillsMax = new THREE.Vector3(504, 50, 20);
   const shopMin = new THREE.Vector3(365, -50, -60);
-  const shopMax = new THREE.Vector3(504, 50, 25);
+  const shopMax = new THREE.Vector3(504, 50, 20);
 
   doorways.projects = new THREE.Box3(projectsDoorMin, projectsDoorMax);
   doorways.aboutMe = new THREE.Box3(aboutMeMin, aboutMeMax);
@@ -348,10 +347,10 @@ function onDoorway(character) {
 }
 
 function moveScene() {
-  mainScene = scene;
   clickMoving = false;
   keys = {};
   scene.remove(darkSpot);
+  mainScene = scene;
   resetPopupText();
 }
 
@@ -384,7 +383,7 @@ document.getElementById("skills_button").addEventListener("click", function () {
 
 document.getElementById("shop_button").addEventListener("click", function () {
   // Code to run when the "Enter Shop" button is clicked
-  console.log("Entering Shop...");
+  moveScene();
   currentScene = initProjectsGame();
 });
 
