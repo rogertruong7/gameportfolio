@@ -89,7 +89,7 @@ export function initGame(sharedState) {
     },
     function (xhr) {
       //While it is loading, log the progress
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      console.log((xhr.loaded / xhr.total) * 100 + "% loaded floor");
     },
     function (error) {
       console.log("bye");
@@ -152,7 +152,9 @@ export function initGame(sharedState) {
 
       return character;
     },
-    function (xhr) {},
+    function (xhr) {
+      console.log((xhr.loaded / xhr.total) * 100 + "% loaded character");
+    },
     function (error) {
       console.log("bye");
       console.error(error);
@@ -185,7 +187,7 @@ function createDetails(scene) {
     },
     function (xhr) {
       // //While it is loading, log the progress
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      console.log((xhr.loaded / xhr.total) * 100 + "% loaded tree1");
     },
     function (error) {
       console.log("bye");
@@ -214,7 +216,7 @@ function createBuildings(scene) {
     },
     function (xhr) {
       //While it is loading, log the progress
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      console.log((xhr.loaded / xhr.total) * 100 + "% loaded building");
       if ((xhr.loaded / xhr.total) * 100 >= 100) {
         loading = false;
       }
