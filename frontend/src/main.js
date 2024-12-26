@@ -20,62 +20,72 @@ export const CAMERA_OFFSET = new THREE.Vector3(160, 120, 160);
 document.body.style.cursor = "grab";
 
 // Create a spherical grid
-const radius = 2000; // Radius of the sphere
+const radius = 500; // Radius of the sphere
 const gridDivisions = 36; // Number of grid lines (can adjust for more or less)
 
 function createSphericalGrid(radius, divisions) {
-  const gridMaterial = new THREE.LineBasicMaterial({
-    color: 0xffffff,
-    opacity: 0.5,
-    transparent: true,
-  });
+    const gridMaterial = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        opacity: 0.5,
+        transparent: true,
+    });
 
-  // Create horizontal circles (latitudes)
-  for (let i = 0; i <= divisions; i++) {
-    const lat = (Math.PI * i) / divisions - Math.PI / 2; // Latitude (ranging from -pi/2 to pi/2)
-    const geometry = new THREE.BufferGeometry();
-    const positions = [];
+    // Create a group to hold the grid lines
+    const gridGroup = new THREE.Group();
 
-    for (let j = 0; j <= divisions; j++) {
-      const lon = (2 * Math.PI * j) / divisions; // Longitude (ranging from 0 to 2pi)
-      const x = radius * Math.cos(lat) * Math.cos(lon);
-      const y = radius * Math.sin(lat);
-      const z = radius * Math.cos(lat) * Math.sin(lon);
-      positions.push(x, y, z); // Add each vertex to the positions array
+    // Create horizontal circles (latitudes)
+    for (let i = 0; i <= divisions; i++) {
+        const lat = (Math.PI * i) / divisions - Math.PI / 2; // Latitude (ranging from -pi/2 to pi/2)
+        const geometry = new THREE.BufferGeometry();
+        const positions = [];
+
+        for (let j = 0; j <= divisions; j++) {
+            const lon = (2 * Math.PI * j) / divisions; // Longitude (ranging from 0 to 2pi)
+            const x = radius * Math.cos(lat) * Math.cos(lon);
+            const y = radius * Math.sin(lat);
+            const z = radius * Math.cos(lat) * Math.sin(lon);
+            positions.push(x, y, z); // Add each vertex to the positions array
+        }
+
+        geometry.setAttribute(
+            "position",
+            new THREE.Float32BufferAttribute(positions, 3)
+        ); // Set the positions attribute
+        const line = new THREE.Line(geometry, gridMaterial);
+        gridGroup.add(line);
     }
 
-    geometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(positions, 3)
-    ); // Set the positions attribute
-    const line = new THREE.Line(geometry, gridMaterial);
-    scene.add(line);
-  }
+    // Create vertical circles (longitudes)
+    for (let i = 0; i <= divisions; i++) {
+        const lon = (2 * Math.PI * i) / divisions; // Longitude (ranging from 0 to 2pi)
+        const geometry = new THREE.BufferGeometry();
+        const positions = [];
 
-  // Create vertical circles (longitudes)
-  for (let i = 0; i <= divisions; i++) {
-    const lon = (2 * Math.PI * i) / divisions; // Longitude (ranging from 0 to 2pi)
-    const geometry = new THREE.BufferGeometry();
-    const positions = [];
+        for (let j = 0; j <= divisions; j++) {
+            const lat = (Math.PI * j) / divisions - Math.PI / 2; // Latitude (ranging from -pi/2 to pi/2)
+            const x = radius * Math.cos(lat) * Math.cos(lon);
+            const y = radius * Math.sin(lat);
+            const z = radius * Math.cos(lat) * Math.sin(lon);
+            positions.push(x, y, z); // Add each vertex to the positions array
+        }
 
-    for (let j = 0; j <= divisions; j++) {
-      const lat = (Math.PI * j) / divisions - Math.PI / 2; // Latitude (ranging from -pi/2 to pi/2)
-      const x = radius * Math.cos(lat) * Math.cos(lon);
-      const y = radius * Math.sin(lat);
-      const z = radius * Math.cos(lat) * Math.sin(lon);
-      positions.push(x, y, z); // Add each vertex to the positions array
+        geometry.setAttribute(
+            "position",
+            new THREE.Float32BufferAttribute(positions, 3)
+        ); // Set the positions attribute
+        const line = new THREE.Line(geometry, gridMaterial);
+        gridGroup.add(line);
     }
 
-    geometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(positions, 3)
-    ); // Set the positions attribute
-    const line = new THREE.Line(geometry, gridMaterial);
-    scene.add(line);
-  }
+    // Add the group to the scene
+    scene.add(gridGroup);
+
+    return gridGroup; // Return the group for further manipulation
 }
 
-createSphericalGrid(radius, gridDivisions);
+// Create the grid and move it
+const gridGroup = createSphericalGrid(radius, gridDivisions);
+gridGroup.position.set(120, 0, -120); // Move the grid to a new position
 
 ////////////////////////////////////////////////
 ///////////////////// Lights ///////////////////
