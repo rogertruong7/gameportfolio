@@ -15,7 +15,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Shadow quality
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 export const scene = new THREE.Scene();
-export const CAMERA_OFFSET = new THREE.Vector3(400, 300, 400);
+export const CAMERA_OFFSET = new THREE.Vector3(160, 120, 160);
 
 document.body.style.cursor = "grab";
 
@@ -96,95 +96,95 @@ scene.add(directionalLight);
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
 scene.add(ambientLight);
 
-function createRectAreaLight(
-  color,
-  intensity,
-  width,
-  height,
-  targetPosition,
-  yOffset = 30
-) {
-  const rectLight = new THREE.RectAreaLight(color, intensity, width, height);
-  rectLight.position.set(
-    targetPosition.x,
-    targetPosition.y + yOffset,
-    targetPosition.z
-  );
-  rectLight.lookAt(targetPosition);
-  scene.add(rectLight);
-  return rectLight;
-}
+// function createRectAreaLight(
+//   color,
+//   intensity,
+//   width,
+//   height,
+//   targetPosition,
+//   yOffset = 30
+// ) {
+//   const rectLight = new THREE.RectAreaLight(color, intensity, width, height);
+//   rectLight.position.set(
+//     targetPosition.x,
+//     targetPosition.y + yOffset,
+//     targetPosition.z
+//   );
+//   rectLight.lookAt(targetPosition);
+//   scene.add(rectLight);
+//   return rectLight;
+// }
 
-// Define lights with their specific configurations
-const lightConfigs = [
-  {
-    color: 0xffffff,
-    intensity: 5,
-    width: 100,
-    height: 50,
-    targetPosition: new THREE.Vector3(40, 20, 270),
-  },
-  {
-    color: 0xffffff,
-    intensity: 5,
-    width: 98,
-    height: 50,
-    targetPosition: new THREE.Vector3(50, 65, 165),
-  },
-  {
-    color: 0xffffff,
-    intensity: 5,
-    width: 100,
-    height: 50,
-    targetPosition: new THREE.Vector3(50, 10, 0),
-  },
-  {
-    color: 0xffffff,
-    intensity: 2,
-    width: 100,
-    height: 50,
-    targetPosition: new THREE.Vector3(240, 10, -60),
-  },
-  {
-    color: 0xffffff,
-    intensity: 5,
-    width: 80,
-    height: 50,
-    targetPosition: new THREE.Vector3(300, 85, -130),
-  },
-  {
-    color: 0xffffff,
-    intensity: 5,
-    width: 100,
-    height: 50,
-    targetPosition: new THREE.Vector3(500, 85, -60),
-  },
-  {
-    color: 0xffffff,
-    intensity: 5,
-    width: 100,
-    height: 50,
-    targetPosition: new THREE.Vector3(430, 85, -60),
-  },
-  {
-    color: 0xffffff,
-    intensity: 4,
-    width: 80,
-    height: 70,
-    targetPosition: new THREE.Vector3(420, 0, 100),
-  },
-];
+// // Define lights with their specific configurations
+// const lightConfigs = [
+//   {
+//     color: 0xffffff,
+//     intensity: 5,
+//     width: 100,
+//     height: 50,
+//     targetPosition: new THREE.Vector3(40, 20, 270),
+//   },
+//   {
+//     color: 0xffffff,
+//     intensity: 5,
+//     width: 98,
+//     height: 50,
+//     targetPosition: new THREE.Vector3(50, 65, 165),
+//   },
+//   {
+//     color: 0xffffff,
+//     intensity: 5,
+//     width: 100,
+//     height: 50,
+//     targetPosition: new THREE.Vector3(50, 10, 0),
+//   },
+//   {
+//     color: 0xffffff,
+//     intensity: 2,
+//     width: 100,
+//     height: 50,
+//     targetPosition: new THREE.Vector3(240, 10, -60),
+//   },
+//   {
+//     color: 0xffffff,
+//     intensity: 5,
+//     width: 80,
+//     height: 50,
+//     targetPosition: new THREE.Vector3(300, 85, -130),
+//   },
+//   {
+//     color: 0xffffff,
+//     intensity: 5,
+//     width: 100,
+//     height: 50,
+//     targetPosition: new THREE.Vector3(500, 85, -60),
+//   },
+//   {
+//     color: 0xffffff,
+//     intensity: 5,
+//     width: 100,
+//     height: 50,
+//     targetPosition: new THREE.Vector3(430, 85, -60),
+//   },
+//   {
+//     color: 0xffffff,
+//     intensity: 4,
+//     width: 80,
+//     height: 70,
+//     targetPosition: new THREE.Vector3(420, 0, 100),
+//   },
+// ];
 
-// Create lights using the reusable function
-lightConfigs.forEach((config) => {
-  createRectAreaLight(
-    config.color,
-    config.intensity,
-    config.width,
-    config.height,
-    config.targetPosition
-  );
-});
+// // Create lights using the reusable function
+// lightConfigs.forEach((config) => {
+//   createRectAreaLight(
+//     config.color,
+//     config.intensity,
+//     config.width,
+//     config.height,
+//     config.targetPosition
+//   );
+// });
 
 ////////////////////////////////////////////////
 /////////////////// Game ///////////////////////

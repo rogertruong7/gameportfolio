@@ -8,8 +8,8 @@ import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
 import { initProjectsGame } from "./projects";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 
-const SPEED = 2; // Movement SPEED
-const CAMERA_ROTATION_SPEED = 0.0015;
+const SPEED = 0.8; // Movement SPEED
+const CAMERA_ROTATION_SPEED = 0.0008;
 
 let character,
   targetPosition,
@@ -22,7 +22,7 @@ let floor;
 let loading = false;
 let mainScene;
 let darkSpot;
-let startPosition = [176, -20, 126];
+let startPosition = [93, -8, -134];
 let currentScene;
 let texts = [];
 let doorways = {};
@@ -81,14 +81,14 @@ export function initGame(sharedState) {
     function (gltf) {
       console.log("hello?");
       floor = gltf.scene;
-      floor.position.set(-70, 0, 450);
+      floor.position.set(0, 0, 0);
       floor.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = false;
           node.receiveShadow = true;
         }
       });
-      floor.scale.set(0.8, 0.8, 0.8);
+      floor.scale.set(0.3, 0.3, 0.3);
       floor.name = "floor";
       scene.add(floor);
     },
@@ -137,7 +137,7 @@ export function initGame(sharedState) {
         }
       });
 
-      character.scale.set(0.2, 0.2, 0.2);
+      character.scale.set(0.08, 0.08, 0.08);
       character.rotation.y = -Math.PI / 4;
       scene.add(character);
       sharedState.mixer = new THREE.AnimationMixer(character);
@@ -176,15 +176,15 @@ function createDetails(scene) {
     "models/cherryTree1.glb",
     function (gltf) {
       let tree1 = gltf.scene;
-      tree1.position.set(50, -19, -90);
+      tree1.position.set(33, -8, -219);
       tree1.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = true;
           node.receiveShadow = true;
         }
       });
-      tree1.scale.set(16, 16, 16);
-      tree1.rotation.y = Math.PI / 2;
+      tree1.scale.set(8, 8, 8);
+
       tree1.name = "tree1";
 
       scene.add(tree1);
@@ -207,7 +207,7 @@ function createBuildings(scene) {
     "models/leftBuildings.glb",
     function (gltf) {
       leftBuildings = gltf.scene;
-      leftBuildings.position.set(-70, 0, 450);
+      leftBuildings.position.set(0, 0, 0);
       leftBuildings.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = true;
@@ -231,7 +231,7 @@ function createBuildings(scene) {
     "models/rightBuildings.glb",
     function (gltf) {
       rightBuildings = gltf.scene;
-      rightBuildings.position.set(-70, 0, 450);
+      rightBuildings.position.set(0, 0, 0);
       rightBuildings.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = true;
@@ -255,7 +255,7 @@ function createBuildings(scene) {
     "models/teaShop.glb",
     function (gltf) {
       shop = gltf.scene;
-      shop.position.set(-70, 0, 450);
+      shop.position.set(0, 0, 0);
       shop.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = true;
@@ -327,9 +327,9 @@ function createDoorways() {
   doorways.skills = new THREE.Box3(skillsMin, skillsMax);
   doorways.shop = new THREE.Box3(shopMin, shopMax);
 
-  // Object.entries(doorways).forEach(([showcase, box]) => {
-  //   scene.add(new THREE.Box3Helper(box, 0xff0000));
-  // });
+  Object.entries(doorways).forEach(([showcase, box]) => {
+    scene.add(new THREE.Box3Helper(box, 0xff0000));
+  });
 }
 
 export function resetPopupText() {
@@ -618,6 +618,7 @@ function keyboardMovingSlide(finalDirection) {
     updateRotation(finalDirection);
     if (!collisionNormal) {
       // No collision: move the character in the intended direction
+
       character.position.addScaledVector(finalDirection, SPEED);
     } else {
       // Slide along the wall using the collision normal
@@ -745,19 +746,20 @@ function updateCamera(playerCharacter, camera, CAMERA_OFFSET) {
 const invisWalls = [];
 function isCollision(newPosition, ignoreWall = null) {
   // Define character as a sphere for collision purposes
-  const characterRadius = 20; // Approximate radius of the character
+  const characterRadius = 5; // Approximate radius of the character
   const characterHitbox = new THREE.Sphere(newPosition, characterRadius);
 
   let collisionNormal = null;
   let collidingWall = null;
 
-  const box1Min = new THREE.Vector3(80, -21, -64);
-  const box1Max = new THREE.Vector3(560, 31, -64);
-  const box2Min = new THREE.Vector3(112, -21, -100);
-  const box2Max = new THREE.Vector3(112, 31, 504);
+  const box1Min = new THREE.Vector3(0, -21, -190); // right wall
+  const box1Max = new THREE.Vector3(560, 31, -190);
+  const box2Min = new THREE.Vector3(70, -21, -300); // left wall as
+  const box2Max = new THREE.Vector3(70, 31, 104);
 
   const rightWall = new THREE.Box3(box1Min, box1Max);
   const leftWall = new THREE.Box3(box2Min, box2Max);
+
   invisWalls.push(leftWall);
   invisWalls.push(rightWall);
 
