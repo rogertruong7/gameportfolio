@@ -48,9 +48,9 @@ export function updateGame() {
   if (currentScene === mainScene) {
     if (
       !loading &&
-      // scene.getObjectByName("rightBuildings") &&
+      scene.getObjectByName("rightBuildings") &&
       scene.getObjectByName("leftBuildings") &&
-      scene.getObjectByName("shop") &&
+      // scene.getObjectByName("shop") &&
       scene.getObjectByName("floor")
     ) {
       appearingItemsAfterLoad();
@@ -221,54 +221,54 @@ function createBuildings(scene) {
       console.error(error);
     }
   );
-  // loader.load(
-  //   "models/rightBuildingsNew1.glb",
-  //   function (gltf) {
-  //     rightBuildings = gltf.scene;
-  //     rightBuildings.position.set(0, 0, 0);
-  //     rightBuildings.traverse((node) => {
-  //       if (node.isMesh) {
-  //         node.castShadow = true;
-  //         node.receiveShadow = true;
-  //       }
-  //     });
-  //     rightBuildings.scale.set(0.3, 0.3, 0.3);
-  //     rightBuildings.name = "rightBuildings";
-  //     scene.add(rightBuildings);
-  //   },
-  //   function (xhr) {
-  //     //While it is loading, log the progress
-  //     console.log((xhr.loaded / xhr.total) * 100 + "% loaded rightBuildings");
-  //   },
-  //   function (error) {
-  //     console.log("bye");
-  //     console.error(error);
-  //   }
-  // );
   loader.load(
-    "models/teaShopNew1.glb",
+    "models/rightBuildingsNew1.glb",
     function (gltf) {
-      shop = gltf.scene;
-      shop.position.set(0, 0, 0);
-      shop.traverse((node) => {
+      rightBuildings = gltf.scene;
+      rightBuildings.position.set(0, 0, 0);
+      rightBuildings.traverse((node) => {
         if (node.isMesh) {
           node.castShadow = true;
           node.receiveShadow = true;
         }
       });
-      shop.scale.set(0.3, 0.3, 0.3);
-      shop.name = "shop";
-      scene.add(shop);
+      rightBuildings.scale.set(0.3, 0.3, 0.3);
+      rightBuildings.name = "rightBuildings";
+      scene.add(rightBuildings);
     },
     function (xhr) {
       //While it is loading, log the progress
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded shop");
+      console.log((xhr.loaded / xhr.total) * 100 + "% loaded rightBuildings");
     },
     function (error) {
       console.log("bye");
       console.error(error);
     }
   );
+  // loader.load(
+  //   "models/teaShopNew1.glb",
+  //   function (gltf) {
+  //     shop = gltf.scene;
+  //     shop.position.set(0, 0, 0);
+  //     shop.traverse((node) => {
+  //       if (node.isMesh) {
+  //         node.castShadow = true;
+  //         node.receiveShadow = true;
+  //       }
+  //     });
+  //     shop.scale.set(0.3, 0.3, 0.3);
+  //     shop.name = "shop";
+  //     scene.add(shop);
+  //   },
+  //   function (xhr) {
+  //     //While it is loading, log the progress
+  //     console.log((xhr.loaded / xhr.total) * 100 + "% loaded shop");
+  //   },
+  //   function (error) {
+  //     console.log("bye");
+  //     console.error(error);
+  //   }
+  // );
   
 }
 
